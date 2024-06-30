@@ -1,0 +1,406 @@
+package vn.attendance.exception;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Badrequest Exception
+ */
+@Getter
+@Setter
+public class BadRequestException extends Exception {
+
+    public static final String ID_FOR_UPDATE_IS_INVALID = "ID_FOR_UPDATE_IS_INVALID";
+    public static final String ERROR_INVALID_TOKEN = "ERROR_INVALID_TOKEN";
+    public static final String EMAIL_IS_INVALID = "EMAIL_IS_INVALID";
+    public static final String PHONE_NUMBER_IS_INVALID = "PHONE_NUMBER_IS_INVALID";
+    public static final String PASSWORD_IS_INVALID = "PASSWORD_IS_INVALID";
+    public static final String ACCOUNT_NAME_IS_INVALID = "ACCOUNT_NAME_IS_INVALID";
+    public static final String ERROR_REGISTER_USER_INVALID = "ERROR_REGISTER_USER_INVALID";
+    public static final String ERROR_RESET_PASSWORD_BAD_REQUEST = "ERROR_RESET_PASSWORD_BAD_REQUEST";
+    public static final String ERROR_CHANGE_PASSWORD_BAD_REQUEST = "ERROR_CHANGE_PASSWORD_BAD_REQUEST";
+    private static final long serialVersionUID = 1L;
+    public static final String ERROR_PASSWORD_NOT_MATCH_CONFIRM_PASSWORD = "ERROR_PASSWORD_NOT_MATCH_CONFIRM_PASSWORD";
+    public static final String EMAIL_ALREADY_EXIST = "ERROR_EMAIL_ALREADY_EXIST";
+    public static final String NAME_KATAKANA_IS_INVALID = " NAME_KATAKANA_IS_INVALID";
+    public static final String ERROR_STRIPE_IS_INVALID = " ERROR_STRIPE_IS_INVALID";
+    public static final String ERROR_SOCIAL_TOKEN_IS_INVALID = " ERROR_SOCIAL_TOKEN_IS_INVALID";
+    public static final String ERROR_SOCIAL_LOGIN_REQUEST = "ERROR_SOCIAL_LOGIN_REQUEST";
+    public static final String ERROR_RESIGER_PAYMENT_USER_REQUEST = "ERROR_RESIGER_PAYMENT_USER_REQUEST";
+    public static final String COURSE_CATEGORY_NAME_ALREADY_EXIST = "COURSE_CATEGORY_NAME_ALREADY_EXIST";
+    public static final String COURSE_CATEGORY_NOT_EXIST = "COURSE_CATEGORY_NOT_EXIST";
+    public static final String ERROR_COURSE_CATEGORY_NAME_NOT_NULL = "ERROR_COURSE_CATEGORY_NAME_NOT_NULL";
+    public static final String OFFSET_COURSE_CATEGORY_NAME_NOT_FOUND = "OFFSET_COURSE_CATEGORY_NAME_NOT_FOUND";
+    public static final String UPDATE_COURSE_ERROR = "UPDATE_COURSE_ERROR";
+    public static final String LIST_COURSE_CATEGORY_DELETED_ERROR = "LIST_COURSE_CATEGORY_DELETED_ERROR";
+    public static final String LIST_ORDER_COURSE_CATEGORY_NOT_FOUND = "LIST_ORDER_COURSE_CATEGORY_NOT_FOUND";
+    public static final String LIST_COURSE_CATEGORY_ERROR = "LIST_COURSE_CATEGORY_ERROR";
+    public static final String DOWNLOAD_CSV_COURSE_CATEGORY_ERROR = "DOWNLOAD_CSV_COURSE_CATEGORY_ERROR";
+    public static final String ERROR_ACCEPTANCE_START_IS_REQUIRED = "ERROR_ACCEPTANCE_START_IS_REQUIRED";
+    public static final String ERROR_COURSE_IS_INVALID = "ERROR_COURSE_IS_INVALID";
+    public static final String ERROR_COURSE_WINDOW_SIZE_IS_REQUIRED = "ERROR_COURSE_WINDOW_SIZE_IS_REQUIRED";
+    public static final String ERROR_ACCEPTANCE_END_BIGGER_ACCEPTANCE_START = "ERROR_ACCEPTANCE_END_BIGGER_ACCEPTANCE_START";
+    public static final String ERROR_COURSE_NOT_FOUND = "ERROR_COURSE_NOT_FOUND";
+    public static final String ERROR_REGISTER_UNIT_LESSON_ERROR = "ERROR_REGISTER_UNIT_ERROR";
+    public static final String ERROR_REGISTER_UNIT_TEST_ERROR = "ERROR_REGISTER_UNIT_TEST_ERROR";
+    public static final String ERROR_REGISTER_UNIT_SURVEY_ERROR = "ERROR_REGISTER_UNIT_SURVEY_ERROR";
+    public static final String ERROR_REGISTER_UNIT_REPORT_ERROR = "ERROR_REGISTER_UNIT_REPORT";
+    public static final String ERROR_REGISTER_UNIT_ALREADY_EXIST = "ERROR_REGISTER_UNIT_ALREADY_EXIST";
+    public static final String ERROR_UPDATE_ORDER_LESSON = "ERROR_UPDATE_ORDER_LESSON";
+    public static final String LIST_COURSE_PROGRESS_ERROR = "ERROR_COURSE_PROGRESS_IS_INVALID";
+    public static final String LIST_REQUIRED_COURSE_ERROR = "REQUIRED_COURSE_IS_INVALID";
+    public static final String LIST_COURSE_ERROR = "LIST_COURSE_ERROR";
+    public static final String ERROR_GET_ALL_QUESTIONS = "ERROR_GET_ALL_QUESTIONS";
+    public static final String COURSE_DETAILS_NOT_FOUND = "COURSE_DETAILS_NOT_FOUND";
+    public static final String USER_COURSE_NOT_FOUND = "USER_COURSE_NOT_FOUND";
+    public static final String GROUP_NAME_ALREADY_EXIST = "GROUP_NAME_ALREADY_EXIST";
+    public static final String GROUP_NAME_CANNOT_BE_BLANK = "GROUP_NAME_CANNOT_BE_BLANK";
+    public static final String ERROR_CHANGE_GROUP = "ERROR_CHANGE_GROUP";
+    public static final String NO_RESULTS_FOUND = "NO_RESULTS_FOUND";
+    public static final String YOUR_DATA_IS_INVALID = "YOUR_DATA_IS_INVALID";
+    public static final String DELETE_LESSON_OF_UNIT_SETTING_ERROR = "DELETE_LESSON_OF_UNIT_SETTING_ERROR";
+    public static final String LIST_COPY_AND_CREATE_QUIZ_TEST_OF_UNIT_SETTING_ERROR = "LIST_COPY_AND_CREATE_QUIZ_TEST_OF_UNIT_SETTING_ERROR";
+    public static final String LIST_QUESTION_SETTING_ERROR = "LIST_QUESTION_SETTING_ERROR";
+    public static final String VALUE_SUBMIT_ERROR = "VALUE_UNIT_SUBMIT_ERROR";
+    public static final String COURSE_ALREADY_EXIST = "COURSE_ALREADY_EXIST";
+    public static final String UPDATE_PASS_SCORE_ERROR = "UPDATE_PASS_SCORE_ERROR";
+    public static final String ERROR_NEWS_IS_INVALID = "ERROR_NEWS_IS_INVALID";
+    public static final String NEWS_ALREADY_EXIST = "NEWS_ALREADY_EXIST";
+    public static final String UPDATE_QUESTION_ORDER_ERROR = "UPDATE_QUESTION_ORDER_ERROR";
+    public static final String SUMMARIZE_AND_DELETE_ERROR = "SUMMARIZE_AND_DELETE_ERROR";
+    public static final String LIST_CHOICE_MUST_BE_NOT_EMPTY = "LIST_CHOICE_MUST_BE_NOT_EMPTY";
+    public static final String REQUIRED_QUESTION_REMAINS_UNANSWERRD = "REQUIRED_QUESTION_REMAINS_UNANSWERRD";
+    public static final String EMAIL_SEND_TIME_IS_INVALID = "EMAIL_SEND_TIME_IS_INVALID";
+    public static final String REGISTER_FOLDER_IS_INVALID = "REGISTER_FOLDER_IS_INVALID";
+    public static final String FOLDER_NAME_ALREADY_EXIST = "FOLDER_NAME_ALREADY_EXIST";
+    public static final String FILE_NAME_UNCORECT_FORMAT = "FILE_NAME_UNCORECT_FORMAT";
+    public static final String FILE_DAFAULT_CANNOT_UPDATE_DELETE = "FILE_DAFAULT_CANNOT_UPDATE_DELETE";
+    public static final String FILE_WITH_PATH_AND_ACTIVE_STATUS_NOT_FOUND = "FILE_WITH_PATH_AND_ACTIVE_STATUS_NOT_FOUND";
+    public static final String LIST_ID_DELETE_NOT_NULL = "LIST_ID_DELETE_NOT_NULL";
+    public static final String ERROR_REGISTER_USER = "ERROR_REGISTER_USER";
+    public static final String ERROR_REGISTER_ATTRIBUTE = "ERROR_REGISTER_ATTRIBUTE";
+    public static final String ATTRIBUTES_NAME_ALREADY_EXIST = "ATTRIBUTES_NAME_ALREADY_EXIST";
+    public static final String LIST_DELETE_ATTRIBUTES_NOT_EMPTY = "LIST_DELETE_ATTRIBUTES_NOT_EMPTY";
+    public static final String ERROR_SIGN_IN_BAD_REQUEST = "ERROR_SIGN_IN_BAD_REQUEST";
+    public static final String ERROR_UPDATE_EMAIL_BAD_REQUEST = "ERROR_UPDATE_EMAIL_BAD_REQUEST";
+    public static final String ERROR_UPDATE_USER_PROFILE_BAD_REQUEST = "ERROR_UPDATE_USER_PROFILE_BAD_REQUEST";
+    public static final String ERROR_CHANGE_PASSWORD = "ERROR_CHANGE_PASSWORD";
+    public static final String ERROR_IMAGE_PATH_IS_INVALID = "ERROR_IMAGE_PATH_IS_INVALID";
+    public static final String ERROR_USER_HAS_BEEN_DELETED = "ERROR_USER_HAS_BEEN_DELETED";
+    public static final String ERROR_USER_NOT_ACTIVATED = "ERROR_USER_NOT_ACTIVATED";
+    public static final String ERROR_VERIFY_CODE_NOT_MATCH = "ERROR_VERIFY_CODE_NOT_MATCH";
+    public static final String ERROR_USER_HAVE_SET_A_PASSWORD = "ERROR_USER_HAVE_SET_A_PASSWORD";
+    public static final String ERROR_RESEND_PASSWORD = "ERROR_RESEND_PASSWORD";
+    public static final String ERROR_CHANGE_PASSWORD_TOKEN_EXPIRED = "ERROR_CHANGE_PASSWORD_TOKEN_EXPIRED";
+    public static final String ERROR_CHANGE_EMAIL_TOKEN_EXPIRED = "ERROR_CHANGE_EMAIL_TOKEN_EXPIRED";
+    public static final String USER_PAYMENT_HISTORY_ERROR = "USER_PAYMENT_HISTORY_ERROR";
+    public static final String QUESTION_TEST_CATEGORY_NAME_ALREADY_EXIST = "QUESTION_TEST_CATEGORY_NAME_ALREADY_EXIST";
+    public static final String QUESTION_TEST_CATEGORY_DELETED_ERROR = "QUESTION_TEST_CATEGORY_DELETED_ERROR";
+    public static final String ERROR_REGISTER_QUESTION_TEST_CATEGORY_ERROR = "ERROR_REGISTER_QUESTION_TEST_CATEGORY_ERROR";
+    public static final String ERROR_UPDATE_QUESTION_TEST_CATEGORY_ERROR = "ERROR_UPDATE_QUESTION_TEST_CATEGORY_ERROR";
+    public static final String ERROR_CURRENT_PASSWORD_INVALID = "ERROR_CURRENT_PASSWORD_INVALID";
+    public static final String ERROR_UPDATE_ORDER_COURSE = "ERROR_UPDATE_ORDER_COURSE";
+    public static final String ERROR_HAVE_A_COURSE_COST_IN_LIST = "ERROR_HAVE_A_COURSE_COST_IN_LIST";
+    public static final String ERROR_GET_REPORT_PUBLISH_SETTING = "ERROR_GET_REPORT_PUBLISH_SETTING";
+    public static final String ERROR_LIST_USER_ID_MUST_NOT_BE_EMPTY = "LIST_USER_ID_MUST_NOT_BE_EMPTY";
+    public static final String ERROR_UPDATE_AVATAR_COMPANY = "ERROR_UPDATE_AVATAR_COMPANY";
+    public static final String ERROR_USER_IS_BLOCK = "ERROR_USER_IS_BLOCK";
+    public static final String ERROR_COMPANY_IS_BLOCK = "ERROR_COMPANY_IS_BLOCK";
+    public static final String LIST_DELETE_EMAIL_NOT_EMPTY = "LIST_DELETE_EMAIL_NOT_EMPTY";
+    public static final String ERROR_ACCOUNT_HAS_NOT_APPROVED = "ERROR_ACCOUNT_HAS_NOT_APPROVED";
+    public static final String ERROR_COMPANY_NEED_AT_LEAST_ONE_ADMIN = "ERROR_COMPANY_NEED_AT_LEAST_ONE_ADMIN";
+    public static final String ERROR_CSV_LIMIT_RECORD = "ERROR_CSV_LIMIT_RECORD";
+    public static final String ERROR_UPDATE_CONFIG_SEND_MAIL = "ERROR_UPDATE_CONFIG_SEND_MAIL";
+    public static final String ERROR_THE_NUMBER_OF_RECORDS_MUST_BE_5000_OR_LESS = "ERROR_THE_NUMBER_OF_RECORDS_MUST_BE_5000_OR_LESS";
+    public static final String E0 = "E0";
+    public static final String E2 = "E2";
+    public static final String E3 = "E3";
+    public static final String E6 = "E6";
+    public static final String E8 = "E8";
+    public static final String E10 = "E10";
+    public static final String E11 = "E11";
+    public static final String E20 = "E20";
+    public static final String E21 = "E21";
+    public static final String E22 = "E22";
+    public static final String E23 = "E23";
+    public static final String E24 = "E24";
+
+    public static final String ERROR_SYSTEM_DB_CONNECTION = "ERROR_SYSTEM_DB_CONNECTION";
+    public static final String NO_USERS_MATCH_THE_CRITERIA = "NO_USERS_MATCH_THE_CRITERIA";
+    public static final String ERROR_PASSWORD_IS_REQUIRED = "ERROR_PASSWORD_IS_REQUIRED";
+    public static final String ERROR_NO_USER_ID_OR_TOKEN_SPECIFIED = "ERROR_NO_USER_ID_OR_TOKEN_SPECIFIED";
+    public static final String ERROR_SAME_EMAIL_ADDRESS_REQUIRED = "ERROR_SAME_EMAIL_ADDRESS_REQUIRED";
+    public static final String ERROR_AUTHENTICATION_FAILED_WRONG_EMAIL_OR_PASSWORD = "ERROR_AUTHENTICATION_FAILED_WRONG_EMAIL_OR_PASSWORD";
+    public static final String ERROR_ILLEGAL_TOKEN_OR_EXPIRATION_ERROR = "ERROR_ILLEGAL_TOKEN_OR_EXPIRATION_ERROR";
+    public static final String ERROR_PASSWORD_CHANGE_NOTIFICATION_TRANSMISSION = "ERROR_PASSWORD_CHANGE_NOTIFICATION_TRANSMISSION";
+    public static final String ERROR_AUTHENTICATION_FAILED_SPECIFIED_ACCOUNT_IS_LOCKED = "ERROR_AUTHENTICATION_FAILED_SPECIFIED_ACCOUNT_IS_LOCKED";
+    public static final String ERROR_ILLEGAL_USAGE_CODE = "ERROR_ILLEGAL_USAGE_CODE";
+
+    public static final String ERROR_LIST_USER_CANNOT_BLANK = "ERROR_LIST_USER_CANNOT_BLANK";
+    public static final String ERROR_AUTHENTICATION_FAILED_LOCKED_ACCOUNT_AND_NOTIFICATION_TARGET = "ERROR_AUTHENTICATION_FAILED_LOCKED_ACCOUNT_AND_NOTIFICATION_TARGET";
+    public static final String ERROR_USER_DOES_NOT_HAVE_PERMISSION_TO_LOGIN_TO_E_LEARNING = "ERROR_USER_DOES_NOT_HAVE_PERMISSION_TO_LOGIN_TO_E_LEARNING";
+    public static final String ERROR_VERIFY_CODE_BAD_REQUEST = "ERROR_VERIFY_CODE_BAD_REQUEST";
+    public static final String ERROR_UPDATE_AVATAR_BAD_REQUEST = "ERROR_UPDATE_AVATAR_BAD_REQUEST";
+    public static final String ERROR_CHANGE_LANGUAGE_BAD_REQUEST = "ERROR_CHANGE_LANGUAGE_BAD_REQUEST";
+    public static final String ERROR_CREATE_SEMINAR_BAD_REQUEST = "ERROR_CREATE_SEMINAR_BAD_REQUEST";
+    public static final String ERROR_UPDATE_SEMINAR_BAD_REQUEST = "ERROR_UPDATE_SEMINAR_BAD_REQUEST";
+    public static final String ERROR_CREATE_UNIT_SURVEY_ERROR = "ERROR_CREATE_UNIT_SURVEY_ERROR";
+    public static final String ERROR_UPDATE_UNIT_SURVEY_ERROR = "ERROR_UPDATE_UNIT_SURVEY_ERROR";
+    public static final String UNIT_SURVEY_NAME_ALREADY_EXIST = "UNIT_SURVEY_NAME_ALREADY_EXIST";
+    public static final String ERROR_DELETE_UNIT_SURVEY_QUESTION = "ERROR_DELETE_UNIT_SURVEY_QUESTION";
+    public static final String ERROR_CREATE_UNIT_SURVEY_QUESTION_ERROR = "ERROR_CREATE_UNIT_SURVEY_QUESTION_ERROR";
+    public static final String ERROR_UPDATE_UNIT_SURVEY_QUESTION_ERROR = "ERROR_CREATE_UNIT_SURVEY_QUESTION_ERROR";
+    public static final String ERROR_SUBMIT_UNIT_REPORT_TIME_IS_INVALID = "ERROR_SUBMIT_UNIT_REPORT_TIME_IS_INVALID";
+    public static final String AUTOMATIC_COURSE_ASSIGNMENT_ALREADY_EXIST = "AUTOMATIC_COURSE_ASSIGNMENT_ALREADY_EXIST";
+
+    public static final String ERROR_SAME_NAME_ALREADY_EXIST = "ERROR_SAME_NAME_ALREADY_EXIST";
+    public static final String ERROR_UPDATE_UNIT_REPORT = "ERROR_UPDATE_UNIT_REPORT";
+    public static final String ERROR_PUBLIC_SETTING_INVALID = "ERROR_PUBLIC_SETTING_INVALID";
+    public static final String ERROR_UPDATE_QUESTION_REPORT = "ERROR_UPDATE_QUESTION_REPORT";
+    public static final String ERROR_CREATE_QUESTION_REPORT = "ERROR_CREATE_QUESTION_REPORT";
+    public static final String ERROR_DELETE_QUESTION_REPORT = "ERROR_DELETE_QUESTION_REPORT";
+    public static final String ERROR_CHANGE_EMAIL = "ERROR_CHANGE_EMAIL";
+    public static final String ERROR_TIME_IS_INVALID = "ERROR_TIME_IS_INVALID";
+    public static final String ERROR_COURSE_ALREADY_EXIST_IN_CART = "ERROR_COURSE_ALREADY_EXIST_IN_CART";
+    public static final String ERROR_QUESTION_MANAGEMENT_DELETE = "ERROR_QUESTION_MANAGEMENT_DELETE";
+    public static final String ERROR_MODIFIED_HIERARCHY_EXCEEDS = "ERROR_MODIFIED_HIERARCHY_EXCEEDS";
+    public static final String ERROR_SAME_CATEGORY_CAN_NOT_SELECTED = "ERROR_SAME_CATEGORY_CAN_NOT_SELECTED";
+    public static final String ERROR_ACCESS_TOKEN_BAD_REQUEST = "ERROR_ACCESS_TOKEN_BAD_REQUEST";
+    public static final String ERROR_CODE_INVALID = "ERROR_CODE_INVALID";
+    public static final String ERROR_CODE_HAS_EXPIRED = "ERROR_CODE_HAS_EXPIRED";
+    public static final String ERROR_COPY_AND_CREATE_QUESTION = "ERROR_COPY_AND_CREATE_QUESTION";
+    public static final String ERROR_CONTENT_CHOICE_MAX_LENGTH = "ERROR_CONTENT_CHOICE_MAX_LENGTH";
+    public static final String ERROR_ANSWER_QUESTION_IS_REQUESTED = "ERROR_ANSWER_QUESTION_IS_REQUESTED";
+    public static final String ERROR_NO_DATA_TO_SORTED = "ERROR_NO_DATA_TO_SORTED";
+    public static final String ERROR_NO_DATA_SORTED = "ERROR_NO_DATA_SORTED";
+    public static final String ERROR_VERIFY_HEADER_CSV = "ERROR_VERIFY_HEADER_CSV";
+    public static final String ERROR_INVALID_FILE_TYPE = "ERROR_INVALID_FILE_TYPE";
+    public static final String ERROR_INVALID_FILE_FORMAT = "ERROR_INVALID_FILE_FORMAT";
+    public static final String ERROR_NAME_FURIGANA_NOT_NULL = "ERROR_NAME_FURIGANA_NOT_NULL";
+    public static final String ERROR_NAME_NOT_NULL = "ERROR_NAME_NOT_NULL";
+    public static final String ERROR_INCORRECT_FORMAT_FURIGARA = "ERROR_INCORRECT_FORMAT_FURIGARA";
+    public static final String ERROR_NUMBER_OF_USER_EXCEEDS_THE_PLAN = "ERROR_NUMBER_OF_USER_EXCEEDS_THE_PLAN";
+    public static final String ERROR_FILE_NO_CONTENT = "ERROR_FILE_NO_CONTENT";
+    public static final String ERROR_FILE_ALREADY_EXISTED = "ERROR_FILE_ALREADY_EXISTED";
+    public static final String ERROR_LIST_ENROLLMENT_IN_VALID = "ERROR_LIST_ENROLLMENT_IN_VALID";
+    public static final String ERROR_CREATE_SUBTITLE_IN_VALID = "ERROR_CREATE_SUBTITLE_IN_VALID";
+    public static final String ERROR_ANY_FIELD_EXCEEDS_THE_QUEUE_LENGTH_LIMIT = "ERROR_ANY_FIELD_EXCEEDS_THE_QUEUE_LENGTH_LIMIT";
+    public static final String ERROR_DATA_IS_INVALID = "ERROR_DATA_IS_INVALID";
+    public static final String ERROR_CREATE_SETTING_AUTOMATIC_SETTING_COURSE_ASSIGNMENT = "ERROR_CREATE_SETTING_AUTOMATIC_SETTING_COURSE_ASSIGNMENT";
+    public static final String ERROR_INVALID_RANGE_DATE = "ERROR_INVALID_RANGE_DATE";
+    public static final String ERROR_LIST_USER_NOT_FOUND = "ERROR_LIST_USER_NOT_FOUND";
+    public static final String SEMINAR_NAME_ALREADY_EXIST = "SEMINAR_NAME_ALREADY_EXIST";
+    public static final String ERROR_USER_EXPIRED_TRIAL = "ERROR_USER_EXPIRED_TRIAL";
+    public static final String ERROR_USER_EXPIRED_PAYMENT = "ERROR_USER_EXPIRED_PAYMENT";
+    public static final String ERROR_CHARGE_PLAN_INVALID = "ERROR_CHARGE_PLAN_INVALID";
+    public static final String ERROR_INPUT_CHARGE_PLAN_INVALID = "ERROR_INPUT_CHARGE_PLAN_INVALID";
+    public static final String ERROR_EMAIL_ALREADY_EXIST = "ERROR_EMAIL_ALREADY_EXIST";
+    public static final String ERROR_DATA_INVALID = "ERROR_DATA_INVALID";
+    public static final String ERROR_NUMBER_DATA_OVER_PLAN_PACKAGE = "ERROR_NUMBER_DATA_OVER_PLAN_PACKAGE";
+    public static final String ERROR_NUMBER_USER_OVER_PLAN_PACKAGE = "ERROR_NUMBER_USER_OVER_PLAN_PACKAGE";
+    public static final String ERROR_USER_TRIAL_CAN_NOT_INVITE = "ERROR_USER_TRIAL_CAN_NOT_INVITE";
+    public static final String ERROR_FULLNAME_IS_INVALID = "ERROR_FULLNAME_IS_INVALID";
+    public static final String ERROR_IS_BLOCK_IS_NULL = "ERROR_IS_BLOCK_IS_NULL";
+    public static final String ERROR_INVALID_DOMAIN = "ERROR_INVALID_DOMAIN";
+    public static final String ERROR_ALREADY_EXIST_DOMAIN = "ERROR_ALREADY_EXIST_DOMAIN";
+    public static final String ERROR_UPDATE_DOMAIN = "ERROR_UPDATE_DOMAIN";
+    public static final String ERROR_DOMAIN_EMAIL_IN_BLACK_LIST = "ERROR_DOMAIN_EMAIL_IN_BLACK_LIST";
+    public static final String ERROR_MAINTENANCE_SETTING_IS_INVALID = "ERROR_MAINTENANCE_SETTING_IS_INVALID";
+    public static final String USER_ROLE_NOT_FOUND = "USER_ROLE_NOT_FOUND";
+    public static final String MAINTENANCE = "MAINTENANCE";
+    public static final String ERROR_EMAIL_MUST_BELONG_TO_THE_COMPANY_USER_ = "ERROR_EMAIL_MUST_BELONG_TO_THE_COMPANY_USER_";
+    public static final String ERROR_COMPANY_DELETED_ERROR = "ERROR_COMPANY_DELETED_ERROR";
+    public static final String ERROR_UNAUTHORIZED_DELETED_NISOKEN_COMPANY = "ERROR_UNAUTHORIZED_DELETED_NISOKEN_COMPANY";
+    public static final String ERROR_UNAUTHORIZED_DELETED_COMPANY = "ERROR_UNAUTHORIZED_DELETED_COMPANY";
+    public static final String UNABLE_TO_MODIFY_THE_ADMINISTRATOR_OWN_ROLE = "UNABLE_TO_MODIFY_THE_ADMINISTRATOR_OWN_ROLE";
+    public static final String CANNOT_MODIFY_OTHER_COMPANY_USERS = "CANNOT_MODIFY_OTHER_COMPANY_USERS";
+    public static final String ERROR_DOMAIN_EMAIL_ALREADY_EXIST = "ERROR_DOMAIN_EMAIL_ALREADY_EXIST";
+    public static final String ERROR_PROJECT_IS_INVALID = "ERROR_PROJECT_IS_INVALID";
+    public static final String ERROR_PUBLIC_KEY_IS_INVALID = "ERROR_PUBLIC_KEY_IS_INVALID";
+    public static final String ERROR_COMPANY_NUMBER_OF_EMPLOYEE = "ERROR_COMPANY_NUMBER_OF_EMPLOYEE";
+    public static final String ERROR_COMPANY_HAS_CANCELLATION = "ERROR_COMPANY_HAS_CANCELLATION";
+    public static final String ERROR_COMPANY_STOP_ROBOT_PAYMENT = "ERROR_COMPANY_STOP_ROBOT_PAYMENT";
+    public static final String ERROR_COMPANY_HAS_CANCELLATION_RE_REGISTER_CONTINUE_USING = "ERROR_COMPANY_HAS_CANCELLATION_RE_REGISTER_CONTINUE_USING";
+    public static final String ERROR_COMPANY_HAS_CANCELLATION_CONTACT_ADMIN = "ERROR_COMPANY_HAS_CANCELLATION_CONTACT_ADMIN";
+    public static final String ERROR_PROJECT_ALREADY_EXISTS = "ERROR_PROJECT_ALREADY_EXISTS";
+    public static final String ERROR_PLANZZ_PASSWORD_ALREADY_EXISTS = "ERROR_PLANZZ_PASSWORD_ALREADY_EXISTS";
+    public static final String ERROR_PLANZZ_PASSWORD_REGISTER = "ERROR_PLANZZ_PASSWORD_REGISTER";
+    public static final String ERROR_PLANZZ_NUMBER_OF_PASSWORD_REGISTER = "ERROR_PLANZZ_NUMBER_OF_PASSWORD_REGISTER";
+    public static final String ERROR_PLANZZ_PASSWORD_DELETE = "ERROR_PLANZZ_PASSWORD_DELETE";
+    public static final String ERROR_PLANZZ_PASSWORD_LIST = "ERROR_PLANZZ_PASSWORD_LIST";
+    public static final String ERROR_BATCH_DELETE_COMPNAY = "ERROR_BATCH_DELETE_COMPNAY";
+    public static final String ERROR_CODE_NOT_EMPTY = "ERROR_CODE_NOT_EMPTY";
+    public static final String ERROR_CAN_NOT_UN_CHECK_PLANZ = "ERROR_CAN_NOT_UN_CHECK_PLANZ";
+    public static final String ERROR_PLANZZ_PASSWORD_NOT_EXISTS = "ERROR_PLANZZ_PASSWORD_NOT_EXISTS";
+    public static final String ERROR_PLANZZ_PASSWORD_NOT_NULL_OR_EMPTY = "ERROR_PLANZZ_PASSWORD_NOT_NULL_OR_EMPTY";
+    public static final String WORKSPACE_ALREADY_EXIST = "WORKSPACE_ALREADY_EXIST";
+    public static final String WORKSPACE_NOT_FOUND = "WORKSPACE_NOT_FOUND";
+    public static final String WORKSPACE_USER_NOT_FOUND = "WORKSPACE_USER_NOT_FOUND";
+    public static final String WORKSPACE_IS_INVALID = "WORKSPACE_IS_INVALID";
+    public static final String LIST_WORKSPACE_DELETED_ERROR = "LIST_WORKSPACE_DELETED_ERROR";
+    public static final String ERROR_EMAIL_NOT_EXIST = "ERROR_EMAIL_NOT_EXIST";
+    public static final String ERROR_USER_WORKSPACE_ALREADY_EXIST = "ERROR_USER_WORKSPACE_ALREADY_EXIST";
+    public static final String ERROR_USER_NOT_EXIST_IN_COMPANY_OR_WORKSPACE = "ERROR_USER_NOT_EXIST_IN_COMPANY_OR_WORKSPACE";
+
+    public static final String ERROR_CREATE_TAG_BAD_REQUEST = "ERROR_CREATE_TAG_BAD_REQUEST";
+    public static final String ERROR_DELETE_TAG_BAD_REQUEST = "ERROR_DELETE_TAG_BAD_REQUEST";
+    public static final String ERROR_CREATE_TALK_BOARD_BAD_REQUEST = "ERROR_CREATE_TALK_BOARD_BAD_REQUEST";
+    public static final String ERROR_UPDATE_TALK_BOARD_BAD_REQUEST = "ERROR_UPDATE_TALK_BOARD_BAD_REQUEST";
+    public static final String ERROR_DELETE_TALK_BOARD_BAD_REQUEST = "ERROR_DELETE_TALK_BOARD_BAD_REQUEST";
+    public static final String ERROR_USER_CANNOT_MODIFY_TALK_BOARD = "ERROR_USER_CANNOT_MODIFY_TALK_BOARD";
+    public static final String ERROR_USER_CANNOT_DELETE_TALK_BOARD = "ERROR_USER_CANNOT_DELETE_TALK_BOARD";
+
+    public static final String ERROR_LIST_FILE_ID_MUST_BE_NOT_EMPTY = "ERROR_LIST_FILE_ID_MUST_BE_NOT_EMPTY";
+
+    public static final String ERROR_LIST_ID_NOTIFICATION_MUST_NOT_BE_EMPTY = "ERROR_LIST_ID_NOTIFICATION_MUST_NOT_BE_EMPTY";
+
+    public static final String ERROR_DELETE_FILE_S3_ERROR = "ERROR_DELETE_FILE_S3_ERROR";
+
+    public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+
+    public static final String CANNOT_MODIFY_FULL_NAME_FIELD = "CANNOT_MODIFY_FULL_NAME_FIELD";
+    public static final String CANNOT_MODIFY_FULL_NAME_KATA_FIELD = "CANNOT_MODIFY_FULL_NAME_KATA_FIELD";
+    public static final String CANNOT_MODIFY_CLASSIFICATION_FIELD = "CANNOT_MODIFY_CLASSIFICATION_FIELD";
+    public static final String GROUP_NOT_FOUND = "GROUP_NOT_FOUND";
+    public static final String ATTRIBUTE_NOT_FOUND = "ATTRIBUTE_NOT_FOUND";
+    public static final String ERROR_TAG_ALREADY_EXISTS = "ERROR_TAG_ALREADY_EXISTS";
+    public static final String ERROR_DELETE_TALK_BOARD_INVALID = "ERROR_DELETE_TALK_BOARD_INVALID";
+    public static final String ERROR_TALK_BOARD_REGISTER_FILE_INVALID = "ERROR_TALK_BOARD_REGISTER_FILE_INVALID";
+    public static final String ERROR_REGISTER_COMMENT_FILE_INVALID = "ERROR_REGISTER_COMMENT_FILE_INVALID";
+    public static final String ERROR_DELETE_TALK_BOARD_FILE = "ERROR_DELETE_TALK_BOARD_FILE";
+    public static final String ERROR_DELETE_COMMENT_FILE = "ERROR_DELETE_COMMENT_FILE";
+    public static final String ERROR_COMMENT_BAD_REQUEST = "ERROR_COMMENT_BAD_REQUEST";
+    public static final String ERROR_UPDATE_COMMENT_BAD_REQUEST = "ERROR_UPDATE_COMMENT_BAD_REQUEST";
+    public static final String ERROR_STILL_USER_IN_WORKSPACE = "ERROR_STILL_USER_IN_WORKSPACE";
+    public static final String ERROR_HIDE_COMMENT_BAD_REQUEST = "ERROR_HIDE_COMMENT_BAD_REQUEST";
+
+    public static final String ERROR_CREATE_USER_FIRESTORE_INVALID = "ERROR_CREATE_USER_FIRESTORE_INVALID";
+    public static final String ERROR_UPDATE_USER_FIRESTORE_INVALID = "ERROR_UPDATE_USER_FIRESTORE_INVALID";
+    public static final String ERROR_REGISTER_GROUP_FIRESTORE_INVALID = "ERROR_REGISTER_GROUP_FIRESTORE_INVALID";
+    public static final String ERROR_DELETE_GROUP_FIRESTORE_INVALID = "ERROR_DELETE_GROUP_FIRESTORE_INVALID";
+    public static final String ERROR_UPDATE_GROUP_FIRESTORE_INVALID = "ERROR_UPDATE_GROUP_FIRESTORE_INVALID";
+    public static final String ERROR_ADD_USER_GROUP_FIREBASE_INVALID = "ERROR_ADD_USER_GROUP_FIREBASE_INVALID";
+    public static final String ERROR_DELETE_USER_FIRESTORE_INVALID = "ERROR_DELETE_USER_FIRESTORE_INVALID";
+    public static final String ERROR_DELETE_USER_GROUP_FIRESTORE_INVALID = "ERROR_DELETE_USER_GROUP_FIRESTORE_INVALID";
+    public static final String ERROR_USER_ID_MUST_NOT_BE_EMPTY = "USER_ID_MUST_NOT_BE_EMPTY";
+    public static final String ERROR_HOLD_VIDEO_BAD_REQUEST = "ERROR_HOLD_VIDEO_BAD_REQUEST";
+    public static final String ERROR_UPDATE_LAST_VIEWED_VIDEO_BAD_REQUEST = "ERROR_UPDATE_LAST_VIEWED_VIDEO_BAD_REQUEST";
+    public static final String ERROR_PROJECT_NAME_EXISTS = "ERROR_PROJECT_NAME_EXISTS";
+    public static final String ERROR_VIDEO_EXISTS_IN_VIDEO_EDITOR = "ERROR_VIDEO_EXISTS_IN_VIDEO_EDITOR";
+    public static final String ERROR_UNAUTHORIZED_CONFIG_SEND_MAIL = "ERROR_UNAUTHORIZED_CONFIG_SEND_MAIL";
+    public static final String ERROR_SELECT_ALL_OR_QUANTITY = "ERROR_SELECT_ALL_OR_QUANTITY";
+    public static final String ERROR_PUSH_NOTIFICATION = "ERROR_PUSH_NOTIFICATION";
+    public static final String ERROR_UPDATE_CHECK_PASSWORD_VIDEO_BAD_REQUEST = "ERROR_UPDATE_CHECK_PASSWORD_VIDEO_BAD_REQUEST";
+    public static final String ERROR_CAN_NOT_ACCESS_COURSE = "ERROR_CAN_NOT_ACCESS_COURSE";
+    public static final String ERROR_TEMPLATE_NOT_FOUND = "ERROR_TEMPLATE_NOT_FOUND";
+    public static final String ERROR_TEMPLATE_EXIST = "ERROR_TEMPLATE_EXIST";
+    public static final String ERROR_ACCESS_DENIED_FOR_TEMPLATE = "ERROR_ACCESS_DENIED_FOR_TEMPLATE";
+    public static final String ERROR_CREATE_TEMPLATE_BAD_REQUEST = "ERROR_CREATE_TEMPLATE_BAD_REQUEST";
+    public static final String ERROR_UPDATE_TEMPLATE_BAD_REQUEST = "ERROR_UPDATE_TEMPLATE_BAD_REQUEST";
+    public static final String LOGIN_ID_ALREADY_EXIST = "LOGIN_ID_ALREADY_EXIST";
+    public static final String ERROR_EXISTED_SIGNIN_ID = "ERROR_EXISTED_SIGNIN_ID";
+
+    public static final String ERROR_EXISTED_EMPLOYEE_NUMBER = "ERROR_EXISTED_EMPLOYEE_NUMBER";
+    public static final String ERROR_EMPLOYEE_NUMBER_INVALID = "ERROR_EMPLOYEE_NUMBER_INVALID";
+    public static final String ERROR_REQUIRED_SIGNIN_ID = "ERROR_REQUIRED_SIGNIN_ID";
+    public static final String ERROR_COMPANY_CODE = "ERROR_COMPANY_CODE";
+    public static final String ERROR_COMPANY_CODE_SERAKU_ALREADY_EXISTED = "ERROR_COMPANY_CODE_SERAKU_ALREADY_EXISTED";
+    public static final String ERROR_AUTHENTICATION_FAILED_WRONG_SIGNIN_ID_OR_PASSWORD = "ERROR_AUTHENTICATION_FAILED_WRONG_SIGNIN_ID_OR_PASSWORD";
+    public static final String CANNOT_MODIFY_EMAIL = "CANNOT_MODIFY_EMAIL";
+    public static final String CANNOT_MODIFY_SIGNIN_ID = "CANNOT_MODIFY_SIGNIN_ID";
+    public static final String CANNOT_MODIFY_COMPANY_CODE = "CANNOT_MODIFY_COMPANY_CODE";
+
+    public static final String LOCK_ACCOUNT_30_MINUTES = "LOCK_ACCOUNT_30_MINUTES";
+    public static final String CANNOT_MODIFY_PASSWORD = "CANNOT_MODIFY_PASSWORD";
+
+    public static final String CANNOT_MODIFY_EMPLOYEE_NUMBER = "CANNOT_MODIFY_EMPLOYEE_NUMBER";
+    public static final String REPORT_NOT_FOUND = "DAILY_REPORT_NOT_FOUND";
+
+    public static final String CANNOT_DELETE_API_USING = "CANNOT_DELETE_API_USING";
+
+    public static final String CANNOT_DELETE_IP_USING = "CANNOT_DELETE_IP_USING";
+
+    public static final String IP_DUPLICATE = "IP_DUPLICATE";
+
+    public static final String E01102 = "E01102";
+    public static final String E00901 = "E00901";
+    public static final String E00902 = "E00902";
+    public static final String E01202 = "E01202";
+    public static final String E00202 = "E00202";
+
+
+    public static final String E01102_MESSAGE = "不正なリクエストと判定されました。 システム会社までお問合せください。";
+    public static final String E00901_MESSAGE = "システムで障害が発生しました。システム会社までお問合せください。";
+    public static final String E00902_MESSAGE = "不正なリクエストと判定されました。システム会社までお問合せください。";
+    public static final String E01202_NOT_FOUND_DATA = "条件に一致する%sはありません。";
+    public static final String E01202_INVALID_INPUT_DATA = "%s : 入力データが不正です";
+    public static final String E00202_ERROR_VALUE_FROM_TO = "%sは%sより大きいな値を入力しました。";
+    public static final String E00202_NOT_SAME_FORMAT = "%sと%sの形式は統一しません。";
+
+    public static final String COMPANY_CODE_SERAKU_ERROR_FORMAT = "COMPANY_CODE_SERAKU_ERROR_FORMAT";
+    public static final String ERROR_COMPANY_CODE_SERAKU_IS_BLANK = "ERROR_COMPANY_CODE_SERAKU_IS_BLANK";
+
+    public static final String COMPANY_CODE_SERAKU_EXISTED = "COMPANY_CODE_SERAKU_EXISTED";
+    public static final String ERROR_FROM_SERAKU_82105_CODE = "ERROR_FROM_SERAKU_82105";
+    public static final String ERROR_DELETE_USER_INFORMATION = "ERROR_DELETE_USER_INFORMATION";
+    public static final String ERROR_FROM_SERAKU_82105_MESSAGE = "マイページ側の企業コードは不正です。システム会社までお問合せください。";
+
+
+    public static final String ERROR_FOLDER_CANT_CHANGE_ORDER_WITH_FILE = "ERROR_FOLDER_CANT_CHANGE_ORDER_WITH_FILE";
+
+    public static final String ERROR_CANT_DELETE_ADMIN = "ERROR_CANT_DELETE_ADMIN";
+
+    public static final String ERROR_UPLOAD_TO_S3 = "ERROR_UPLOAD_TO_S3";
+
+    public static final String ERROR_DUPLICATE_USER_DELETE = "ERROR_DUPLICATE_USER_DELETE";
+
+    public static final String ERROR_EXTERNAl_API_EXIST = "ERROR_EXTERNAl_API_EXIST";
+
+    public static final String ERROR_IP_CONFIGURATION_EXIST = "ERROR_IP_CONFIGURATION_EXIST";
+
+    public static final String ERROR_DONT_HAVE_FILE_AUDIO_UPLOADED = "ERROR_DONT_HAVE_FILE_AUDIO_UPLOADED";
+
+
+    private String error;
+    private String message;
+    private String error_code;
+    private boolean isJson;
+    @JsonIgnore
+    private boolean isPrintStackTrace;
+
+    public BadRequestException() {
+        super();
+    }
+
+    public BadRequestException(String message, boolean isJson) {
+        super(message);
+        this.message = message;
+        this.isJson = isJson;
+    }
+
+    public BadRequestException(String error) {
+        this.error = error;
+    }
+
+    public BadRequestException(String error_code, String message) {
+        super(message);
+        this.error = error_code;
+        this.message = message;
+        this.isJson = true;
+    }
+
+    public BadRequestException(String error, String message, boolean isJson) {
+        super(message);
+        this.error = error;
+        this.message = message;
+        this.isJson = isJson;
+    }
+
+    public BadRequestException(String error, String message, Integer x) {
+        super(message);
+        this.error_code = error;
+        this.message = message;
+
+    }
+}
