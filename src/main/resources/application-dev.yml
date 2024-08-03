@@ -1,0 +1,126 @@
+# Server
+server:
+  port: 8080
+  tomcat:
+    accept-count: 1000
+  error:
+    include-binding-errors: on_param
+    include-message: always
+    include-stacktrace: on_param
+    include-exception: true
+springdoc:
+  api-docs:
+    enabled: true
+    path: /docs/api-docs
+  swagger-ui:
+    path: /docs/swagger-ui.html
+#Schedule
+schedule:
+  api_fixRate: 6000
+  kafka_fixRate: 6000
+  denounce: 6000
+  send_fixRate: 12000
+security:
+  jwt:
+    header: "Authorization"
+    prefix: "Bearer"
+    expiration: "#{2*60*60}"
+    secret: "travel-be-application"
+    refreshExpiration: "#{6*60*60}"
+    token_expire: 30 #minutes
+  otp:
+    time-expire: 5
+# Spring
+spring:
+  application:
+    name: ATTENDANCE_BE_APPLICATION
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  zipkin:
+    enabled: false
+  messages:
+    basename: messages
+    encoding: UTF-8
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    date-format: dd/MM/yyyy HH:mm:ss
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/AMS
+#    username: root
+#    password: 12345678
+    url: jdbc:mysql://ams-server1.mysql.database.azure.com:3306/ams
+    username: hoangth
+    password: Huecute160202
+    name: ams
+    maximum-pool-size: 1000
+    minimum-idle: 20
+    max-lifetime: 1800000
+    idle-timeout: 180000
+    connection-timeout: 200000
+    pool-prepared-statements: true
+    max-open-prepared-statements: 250
+    pool-name: AMS-HikariCP
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database: mysql
+    show-sql: true
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+  main:
+    allow-bean-definition-overriding: true
+  flyway:
+#    url: jdbc:mysql://localhost:3306/AMS
+#    user: root
+#    password: 12345678
+    url: jdbc:mysql://ams-server1.mysql.database.azure.com:3306/ams
+    user: hoangth
+    password: Huecute160202
+    baseline-on-migrate: true
+    baseline-version: 0
+    baseline-description: Initialize the schema history table
+    enabled: true
+    ignore-missing-migrations: true
+    out-of-order: true
+    locations: classpath:migrate
+app:
+  flyway:
+    repair: false
+# Jasypt
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    key-obtention-iterations: 1000
+    pool-size: 1
+    provider-name: SunJCE
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    string-output-type: base64
+    password: c2VjcmV0LWtleQ==
+# Services
+rest:
+  connectTimeout: 30s
+  readTimeout: 30s
+
+threadpoll:
+  corePoolSize: 10
+  maxPoolSize: 15
+  keepAliveSeconds: 10000
+  queueCapacity: 10000000
+  allowCoreThreadTimeOut: true
+  daemon: false
+logging:
+  file:
+    path: logs
+spring-boot:
+  batch:
+    enable: true
+    cron:
+      test: 0 0/1 * ? * *
+
+
