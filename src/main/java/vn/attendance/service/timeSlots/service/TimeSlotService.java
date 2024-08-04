@@ -12,7 +12,7 @@ import java.util.List;
 public interface TimeSlotService {
     Page<TimeSlotDto> findAllTimeSlots(String search, String status, int page, int size);
 
-    AddTimeSlotRequest addTimeSLot(AddTimeSlotRequest request) throws AmsException;
+    AddTimeSlotRequest addTimeSLot(AddTimeSlotRequest request, Integer option) throws AmsException;
 
     TimeSlot editTimeSlot(EditTimeSlotRequest request) throws AmsException;
 

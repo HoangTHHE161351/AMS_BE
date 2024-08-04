@@ -6,6 +6,7 @@ import vn.attendance.model.ClassSubject;
 import vn.attendance.service.classSubject.request.AddClassSubjectRequest;
 import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.classSubject.response.ClassSubjectDto;
+import vn.attendance.service.classSubject.response.IClassDto;
 
 import java.util.List;
 
@@ -20,7 +21,5 @@ public interface ClassSubjectService {
     void deleteClassSubject(Integer id) throws AmsException;
 
 
-
-
-
+    List<IClassDto> getClassesSubject(Integer subjectId);
 }

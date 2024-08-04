@@ -38,14 +38,17 @@ public class ClassSubjectController {
         return ApiResponse.okStatus(response);
     }
     @GetMapping("class-subject-details")
-    public ApiResponse<?> classSubjectDetails(@RequestParam int id) throws AmsException {
+    public ApiResponse<?> classSubjectDetails(@RequestParam Integer id) throws AmsException {
         return ApiResponse.okStatus(classSubjectService.findById(id));
     }
     @DeleteMapping("/delete-class-subject")
-    public ApiResponse<?> deleteClassSubject(@RequestParam int id) throws AmsException {
+    public ApiResponse<?> deleteClassSubject(@RequestParam Integer id) throws AmsException {
         classSubjectService.deleteClassSubject(id);
         return ApiResponse.okStatus("Delete Success!");
     }
 
-
+    @GetMapping("get-classes-subject")
+    public ApiResponse<?> getClassesSubject(@RequestParam Integer subjectId) throws AmsException {
+        return ApiResponse.okStatus(classSubjectService.getClassesSubject(subjectId));
+    }
 }

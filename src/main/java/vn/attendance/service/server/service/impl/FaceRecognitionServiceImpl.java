@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.Memory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.attendance.config.mqtt.MqttConnectionStatusService;
+import vn.attendance.controller.ModuleController;
 import vn.attendance.controller.SocketController;
 import vn.attendance.exception.AmsException;
 import vn.attendance.job.entity.ChangeRequest;
@@ -63,9 +65,6 @@ public class FaceRecognitionServiceImpl implements FaceRecognitionService {
     private FacialRepository facialRepository;
 
     @Autowired
-    NotifyUserRepository notifyUserRepository;
-
-    @Autowired
     RoomRepository roomRepository;
 
     @Autowired
@@ -84,6 +83,10 @@ public class FaceRecognitionServiceImpl implements FaceRecognitionService {
     TeacherRepository teacherRepository;
     @Autowired
     ScheduleRepository scheduleRepository;
+    @Autowired
+    ModuleController moduleController;
+    @Autowired
+    MqttConnectionStatusService mqttConnectionStatusService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -818,14 +821,17 @@ public class FaceRecognitionServiceImpl implements FaceRecognitionService {
     public void updateAllFace(){
         CompletableFuture.runAsync(() -> {
             try{
-                addAllUserTask();
                 if (serverInstance.isConnect()) {
                     synchronizeFace();
-                    addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "Data has been successfully synchronized to IVSS Server.");
+                    notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "Data has been successfully synchronized to IVSS Server.");
                 } else {
                     System.out.println(MessageCode.SERVER_CONNECT_FAIL);
-                    addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "Failed to synchronize data to IVSS Server due to connection issues.");
+                    notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "Failed to synchronize data to IVSS Server due to connection issues.");
                 }
+                moduleController.callModelingApi();
+                addAllUserTask();
+
+
             }catch (AmsException e){
                 System.out.println(e.getMessage());
             }
@@ -836,29 +842,24 @@ public class FaceRecognitionServiceImpl implements FaceRecognitionService {
     @Override
     public void addAllUserTask() throws AmsException {
         System.out.println("Add all user at " + LocalDateTime.now());
-        try {
-            System.out.println("Start Delete");
-            mqttService.CreateDeleteFaceRequest();
-            Thread.sleep(60 * 1000);
-            System.out.println("Start Add");
-            mqttService.CreateAddFaceRequest(Constants.PERSON_TYPE.BLACKLIST);
-            System.out.println("End Add");
-            addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "Data has been successfully synchronized to LCD cameras.");
-        } catch (InterruptedException | AmsException e) {
-            addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "Data synchronization to LCD cameras failed.");
+        if(mqttConnectionStatusService.isConnected()){
+            try {
+                System.out.println("Start Delete");
+                mqttService.CreateDeleteFaceRequest();
+                Thread.sleep(60 * 1000);
+                System.out.println("Start Add");
+                mqttService.CreateAddFaceRequest(Constants.PERSON_TYPE.BLACKLIST);
+                System.out.println("End Add");
+                notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "Data has been successfully synchronized to LCD cameras.");
+            } catch (InterruptedException | AmsException e) {
+            }
+        }else{
+            notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "Data synchronization to LCD cameras failed.");
         }
+
     }
 
-    @Override
-    public void addNotifyForSynchronize(String title, String message) throws AmsException {
-        Notify notify = new Notify();
-        notify.setTitle(title);
-        notify.setContent(message);
-        notify.setTime(LocalDateTime.now());
-        notify.setDestinationPage(Constants.SCREEN_NAME.SYNCHRONIZE);
 
-        notifyService.AddNotify(notify, usersRepository.findUserIdByRole(Constants.ROLE.ADMIN));
-    }
 
     @Override
     public void processRoomEntryTask(Integer personType) throws AmsException {

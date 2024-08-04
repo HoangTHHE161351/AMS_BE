@@ -34,7 +34,8 @@ public class TimeSlotsController {
     @PostMapping("add-timeslot")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ApiResponse<?> addTimeSLot(@Valid @RequestBody AddTimeSlotRequest request) throws AmsException {
-        return ApiResponse.okStatus(timeSlotService.addTimeSLot(request));
+
+        return ApiResponse.okStatus(timeSlotService.addTimeSLot(request, 1));
     }
 
     @PutMapping("edit-timeslot")
@@ -46,7 +47,7 @@ public class TimeSlotsController {
 
     @DeleteMapping("delete-timeslot")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ApiResponse<?> deleteTimeSlot(@PathVariable Integer id) throws AmsException {
+    public ApiResponse<?> deleteTimeSlot(@RequestParam Integer id) throws AmsException {
         timeSlotService.deleteSlot(id);
         return ApiResponse.okStatus("Delete Time Slot Success");
     }

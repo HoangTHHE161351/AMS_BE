@@ -14,6 +14,7 @@ import vn.attendance.service.attendance.request.AttendanceDto;
 import vn.attendance.service.attendance.request.IAttendanceDto;
 import vn.attendance.service.schedule.request.AddScheduleRequest;
 import vn.attendance.service.schedule.request.EditScheduleRequest;
+import vn.attendance.service.schedule.response.ExportScheduleDto;
 import vn.attendance.service.schedule.response.IScheduleDto;
 import vn.attendance.service.schedule.response.ScheduleDto;
 import vn.attendance.service.schedule.service.ScheduleService;
@@ -154,13 +155,13 @@ public class ScheduleImp implements ScheduleService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         Map<String, Integer> rowIndex = new HashMap<>();
-        for (int i = 1; i <= row; i++) {
+        for (int i = 1; i < row; i++) {
             schedule[i][0] = roomList.get(i - 1).getRoomName();
             rowIndex.put(roomList.get(i - 1).getRoomName(), i);
         }
 
         Map<String, Integer> colIndex = new HashMap<>();
-        for (int j = 1; j <= col; j++) {
+        for (int j = 1; j < col; j++) {
             schedule[0][j] = timeSlotList.get(j - 1).getSlotName() +
                     "\n(" + timeSlotList.get(j - 1).getStartTime().format(formatter) +
                     " - " + timeSlotList.get(j - 1).getEndTime().format(formatter) + ")";
@@ -252,14 +253,14 @@ public class ScheduleImp implements ScheduleService {
         }
 
         Map<String, Integer> colIndex = new HashMap<>();
-        for (int i = 1; i <= col; i++) {
+        for (int i = 1; i < col; i++) {
             schedule[0][i] = weeks.get(i - 1).getDayOfWeek().toString() +
                     "\n (" + weeks.get(i - 1).format(dateFormat) + ")";
             colIndex.put(weeks.get(i - 1).getDayOfWeek().toString(), i);
         }
 
         Map<String, Integer> rowIndex = new HashMap<>();
-        for (int j = 1; j <= row; j++) {
+        for (int j = 1; j < row; j++) {
             schedule[j][0] = timeSlotList.get(j - 1).getSlotName() +
                     "\n(" + timeSlotList.get(j - 1).getStartTime().format(formatter) +
                     " - " + timeSlotList.get(j - 1).getEndTime().format(formatter) + ")";
@@ -572,6 +573,19 @@ public class ScheduleImp implements ScheduleService {
         schedule.setModifiedBy(users.getId());
 
         return scheduleRepository.save(schedule);
+    }
+
+    @Override
+    public List<ExportScheduleDto> exportSchedules() throws AmsException {
+        Users users = BaseUserDetailsService.USER.get();
+        if (users == null) {
+            throw new AmsException(MessageCode.USER_NOT_FOUND);
+        }
+        Semester semester = semesterRepository.findSemesters(LocalDate.now());
+        if (semester==null)
+            throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
+
+        return attendanceRepository.exportSchedules(users.getId(), semester.getId());
     }
 
     public List<LocalDate> getDatesFromDayOfWeek(String input, LocalDate fromDate, LocalDate toDate) {

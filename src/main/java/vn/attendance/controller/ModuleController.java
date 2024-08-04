@@ -25,18 +25,17 @@ public class ModuleController {
     private RestTemplate restTemplate;
 
     @Autowired
-    private FaceRecognitionService faceRecognitionService;
+    private NotifyService notifyService;
 
     String url = "http://localhost:9191/";
 
     @GetMapping("call-modeling-api")
-    @Scheduled(cron = "0 0 0 * * ?")
     public ResponseEntity<?> callModelingApi() throws AmsException {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url + "add_person", String.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                faceRecognitionService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "AI module successfully analyzes entire face");
+                notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_SUCCESS, "AI module successfully analyzes entire face");
                 return ResponseEntity.ok(response.getBody());
             } else {
                 // Trường hợp mã trạng thái không phải 2xx
@@ -45,7 +44,7 @@ public class ModuleController {
 
         } catch (Exception e) {
             // Trường hợp xảy ra ngoại lệ
-            faceRecognitionService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "AI module fails to analyze entire face");
+            notifyService.addNotifyForSynchronize(Constants.NOTIFY_TITLE.SYNCHRONIZE_FAIL, "AI module fails to analyze entire face");
             return ResponseEntity.status(500).body("Error call: Module AI not Connect");
         }
     }

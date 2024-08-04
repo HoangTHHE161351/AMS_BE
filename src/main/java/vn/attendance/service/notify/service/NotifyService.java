@@ -17,4 +17,7 @@ public interface NotifyService {
     void setReadNotify(Integer notifyId) throws AmsException;
 
     void AddNotify(Notify notify, List<Integer> userIds) throws AmsException;
+
+    void addNotifyForSynchronize(String title, String message) throws AmsException;
+    void addNotifyForDevice(String title, String message) throws AmsException;
 }

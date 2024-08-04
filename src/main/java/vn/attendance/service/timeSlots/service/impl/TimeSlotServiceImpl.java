@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.exception.AmsException;
-import vn.attendance.model.Schedule;
 import vn.attendance.model.TimeSlot;
 import vn.attendance.model.Users;
 import vn.attendance.repository.ScheduleRepository;
@@ -25,7 +24,6 @@ import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +35,8 @@ import java.util.Objects;
 public class TimeSlotServiceImpl implements TimeSlotService {
     @Autowired
     TimeSlotRepository timeSlotRepository;
+    @Autowired
+    ScheduleRepository scheduleRepository;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -49,7 +49,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public AddTimeSlotRequest addTimeSLot(AddTimeSlotRequest request) throws AmsException {
+    public AddTimeSlotRequest addTimeSLot(AddTimeSlotRequest request, Integer option) throws AmsException {
         Users users = BaseUserDetailsService.USER.get();
         if (users == null)
             throw new AmsException(MessageCode.USER_NOT_FOUND);
@@ -64,15 +64,31 @@ public class TimeSlotServiceImpl implements TimeSlotService {
                 System.out.println("Start Time: " + startTime);
                 System.out.println("End Time: " + endTime);
             } catch (DateTimeParseException e) {
-                throw new AmsException("Error parsing time");
+                if(option == 1) throw new AmsException("Error parsing time");
+                request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
+                request.setErrorMess("Error parsing time");
+                return request;
             }
+
+//            if(!startTime.isBefore(endTime)){
+//                if(option == 1) throw new AmsException(MessageCode.INVALID_TIME_RANGE);
+//                request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
+//                request.setErrorMess(MessageCode.INVALID_TIME_RANGE.getCode());
+//                return request;
+//            }
+
             if (timeSlotRepository.findByTime(startTime, endTime).isPresent()) {
-                throw new AmsException(MessageCode.TIMESLOT_ALREADY_EXISTS);
+                if(option == 1) throw new AmsException(MessageCode.TIMESLOT_TIME_ALREADY_EXISTS);
+                request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
+                request.setErrorMess(MessageCode.TIMESLOT_TIME_ALREADY_EXISTS.getCode());
+                return request;
             }
 
             if (timeSlotRepository.findByName(request.getSlotName()).isPresent()) {
-                System.out.println("abc");
-                throw new AmsException(MessageCode.TIMESLOT_ALREADY_EXISTS);
+                if(option == 1) throw new AmsException(MessageCode.TIMESLOT_NAME_ALREADY_EXISTS);
+                request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
+                request.setErrorMess(MessageCode.TIMESLOT_NAME_ALREADY_EXISTS.getCode());
+                return request;
             }
 
             TimeSlot timeSlotNew = new TimeSlot();
@@ -87,7 +103,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             timeSlotRepository.save(timeSlotNew);
         } catch (AmsException e) {
             request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(e.getMessage());
+            request.setErrorMess(MessageCode.ADD_TIMESLOT_FAIL.getCode());
         }
         return request;
     }
@@ -114,12 +130,12 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             throw new AmsException("Error parsing time");
         }
 
-        if( (!startTime.equals(timeSlot.getStartTime())||!endTime.equals(timeSlot.getEndTime())) && timeSlotRepository.countScheduleByTimeSlot(request.getId())>0){
+        if(timeSlotRepository.countScheduleByTimeSlot(request.getId())>0){
             throw new AmsException(MessageCode.TIMESLOT_ALREADY_ASSIGNED);
         }
 
         TimeSlot old = timeSlotRepository.findByTime(startTime, endTime).orElse(null);
-        if (old!=null && old.getId() != request.getId()) {
+        if (old!=null && !old.getId().equals(request.getId())) {
             throw new AmsException(MessageCode.TIMESLOT_TIME_ALREADY_EXISTS);
         }
 
@@ -168,7 +184,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     public List<AddTimeSlotRequest> importTimeSlots(List<AddTimeSlotRequest> timeSlotList) throws AmsException {
         for (AddTimeSlotRequest request : timeSlotList) {
-            addTimeSLot(request);
+            addTimeSLot(request, 0);
         }
         return timeSlotList;
     }

@@ -17,6 +17,7 @@ import vn.attendance.repository.SubjectRepository;
 import vn.attendance.service.classSubject.request.AddClassSubjectRequest;
 import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.classSubject.response.ClassSubjectDto;
+import vn.attendance.service.classSubject.response.IClassDto;
 import vn.attendance.service.classSubject.service.ClassSubjectService;
 import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
@@ -187,6 +188,11 @@ public class ClassSubjectImpl  implements ClassSubjectService {
         classSubject.setModifiedBy(users.getId());
 
         classSubjectRepository.save(classSubject);
+    }
+
+    @Override
+    public List<IClassDto> getClassesSubject(Integer subjectId) {
+        return classSubjectRepository.getClassesSubject(subjectId);
     }
 
 }

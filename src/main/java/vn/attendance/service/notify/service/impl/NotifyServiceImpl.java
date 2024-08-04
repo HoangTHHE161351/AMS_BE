@@ -12,9 +12,11 @@ import vn.attendance.model.*;
 import vn.attendance.repository.*;
 import vn.attendance.service.notify.service.NotifyService;
 import vn.attendance.service.notify.entity.NotifyDto;
+import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -72,5 +74,28 @@ public class NotifyServiceImpl implements NotifyService {
             notifyUserRepository.save(notifyUser);
         }
         socketController.notifyStatus("New notify");
+    }
+
+
+    @Override
+    public void addNotifyForSynchronize(String title, String message) throws AmsException {
+        Notify notify = new Notify();
+        notify.setTitle(title);
+        notify.setContent(message);
+        notify.setTime(LocalDateTime.now());
+        notify.setDestinationPage(Constants.SCREEN_NAME.SYNCHRONIZE);
+
+        AddNotify(notify, usersRepository.findUserIdByRole(Constants.ROLE.ADMIN));
+    }
+
+    @Override
+    public void addNotifyForDevice(String title, String message) throws AmsException {
+        Notify notify = new Notify();
+        notify.setTitle(title);
+        notify.setContent(message);
+        notify.setTime(LocalDateTime.now());
+        notify.setDestinationPage(Constants.SCREEN_NAME.DEVICE);
+
+        AddNotify(notify, usersRepository.findUserIdByRole(Constants.ROLE.ADMIN));
     }
 }

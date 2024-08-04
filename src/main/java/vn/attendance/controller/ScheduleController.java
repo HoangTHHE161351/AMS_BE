@@ -62,4 +62,9 @@ public class ScheduleController {
                                       @RequestParam LocalDate to) throws Exception {
         return ApiResponse.okStatus(scheduleService.findScheduleByStudentId(from, to));
     }
+
+    @GetMapping("export-schedule")
+    public ApiResponse<?> exportSchedule() throws Exception {
+        return ApiResponse.okStatus(scheduleService.exportSchedules());
+    }
 }

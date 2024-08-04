@@ -36,8 +36,12 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
             "FROM Subject t " +
             "LEFT JOIN Users uc ON t.createdBy = uc.id " +
             "LEFT JOIN Users um ON t.modifiedBy = um.id " +
-            "WHERE :search IS NULL OR t.name LIKE CONCAT('%', :search, '%') OR t.code LIKE CONCAT('%', :search, '%')")
-    Page<SubjectDto> searchSubject(@Param("search") String search, Pageable pageable);
+            "WHERE (coalesce(:search, '') = '' OR t.name LIKE CONCAT('%', :search, '%') " +
+            "OR t.code LIKE CONCAT('%', :search, '%')) " +
+            "and (coalesce(:status, '') = '' or t.status = :status)")
+    Page<SubjectDto> searchSubject(@Param("search") String search,
+                                   @Param("status") String status,
+                                   Pageable pageable);
 
     @Query(value = "select * from subjects s where s.code = :subjectCode and s.status = 'ACTIVE' ", nativeQuery = true)
     Subject findSubjectByCode(String subjectCode);

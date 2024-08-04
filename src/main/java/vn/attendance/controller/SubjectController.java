@@ -21,7 +21,7 @@ public class SubjectController {
     SubjectService subjectService;
     @Autowired
     CurriculumService curriculumService;
-    
+
     @PostMapping("add-subject")
     @PreAuthorize("hasAnyAuthority('ADMIN','STAFF')")
     public ApiResponse<?> addSubject(@RequestBody @Valid AddSubjectRequest request) throws AmsException {
@@ -56,9 +56,10 @@ public class SubjectController {
 
     @GetMapping("all-subjects")
     public ApiResponse<?> searchSubject(@RequestParam(required = false) String search,
-                                          @RequestParam(defaultValue = "1") Integer page,
-                                          @RequestParam(defaultValue = "10") Integer size) {
-        return ApiResponse.okStatus(subjectService.findSubject(search, page, size));
+                                        @RequestParam(required = false) String status,
+                                        @RequestParam(defaultValue = "1") Integer page,
+                                        @RequestParam(defaultValue = "10") Integer size) {
+        return ApiResponse.okStatus(subjectService.findSubject(search, status, page, size));
     }
 
 

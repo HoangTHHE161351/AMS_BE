@@ -4,6 +4,7 @@ import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import vn.attendance.exception.AmsException;
 
 @Component
 @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")

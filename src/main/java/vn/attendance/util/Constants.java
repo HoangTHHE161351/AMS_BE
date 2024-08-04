@@ -132,11 +132,14 @@ public interface Constants {
     interface SCREEN_NAME{
         String LOGS = "LOGS";
         String SYNCHRONIZE = "SYNCHRONIZE";
+        String DEVICE = "DEVICE";
     }
 
     interface NOTIFY_TITLE{
         String STRANGER = "Unknown Person Detected in Room";
         String SYNCHRONIZE_FAIL = "Data Synchronization Failed";
         String SYNCHRONIZE_SUCCESS = "Data Synchronization Successful";
+        String DEVICE_DISCONNECT = "Device Disconnect";
+        String DEVICE_CONNECT = "Device Disconnect";
     }
 }

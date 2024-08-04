@@ -5,6 +5,7 @@ import vn.attendance.model.Schedule;
 import vn.attendance.model.Users;
 import vn.attendance.service.schedule.request.AddScheduleRequest;
 import vn.attendance.service.schedule.request.EditScheduleRequest;
+import vn.attendance.service.schedule.response.ExportScheduleDto;
 import vn.attendance.service.schedule.response.IScheduleDto;
 import vn.attendance.service.schedule.response.ScheduleDto;
 
@@ -34,4 +35,5 @@ public interface ScheduleService {
 
     Schedule deleteSchedule(Integer id) throws AmsException;
 
+    List<ExportScheduleDto> exportSchedules() throws AmsException;
 }

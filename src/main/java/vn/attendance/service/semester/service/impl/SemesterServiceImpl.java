@@ -46,18 +46,15 @@ public class SemesterServiceImpl implements SemesterService {
         List<Semester> semesterList = semesterRepository.findAll();
 
 
-        Map<String, Integer> semesterMap = new HashMap<String, Integer>();
-        for (Semester semester : semesterList) {
-            semesterMap.put(semester.getSemesterName(), semester.getId());
-        }
-
-        if (semesterMap.containsKey(request.getSemesterName())) {
-            if (option == 1 ) throw new AmsException(MessageCode.SEMESTER_ALREADY_EXISTS);
+        Semester old = semesterRepository.findSemestersByName(request.getSemesterName());
+        if(old!= null) {
+            if (option == 1 ) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
 
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.SEMESTER_ALREADY_EXISTS.getCode());
+            request.setErrorMess(MessageCode.SEMESTER_NAME_ALREADY_EXISTS.getCode());
             return request;
         }
+
         if (!isValidTimeRange(request.getStartTime(), request.getEndTime())) {
             if (option == 1 ) throw new AmsException(MessageCode.INVALID_TIME_RANGE);
 
@@ -128,27 +125,19 @@ public class SemesterServiceImpl implements SemesterService {
             throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
         }
         Semester old = semesterRepository.findSemestersByName(request.getSemesterName());
-        if(old!= null && old.getId().equals(request.getId())) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
+        if(old!= null && !old.getId().equals(request.getId())) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
 
         if (!isValidTimeRange(request.getStartTime(), request.getEndTime())) {
             throw new AmsException(MessageCode.INVALID_TIME_RANGE);
         }
 
-        // Kiểm tra nếu thời gian kết thúc bị thay đổi
-        if (!request.getEndTime().equals(semester.getEndTime().toLocalDate())) {
-            //Nếu semester đã kết thúc -> báo lỗi
-            if(semester.getEndTime().isBefore(LocalDateTime.now())) throw new AmsException(MessageCode.SEMESTER_END_TIME_HAS_ALREADY_PASSED);
-            //Chưa kết thúc có thể thay đổi nhưng phải là 1 ngày của tương lai
-            if(request.getEndTime().isBefore(LocalDate.now())) throw new AmsException("End time must be after the present");
+        if(semester.getStartTime().isBefore(LocalDateTime.now()))
+            throw new AmsException(MessageCode.SEMESTER_START_TIME_HAS_ALREADY_PASSED);
+
+        if (request.getStartTime().isBefore(LocalDate.now())) {
+            throw new AmsException("The start and end times must be from "+ LocalDate.now() +" or later.");
         }
 
-        // Kiểm tra nếu thời gian bắt đầu bị thay đổi và thời gian bắt đầu mới đã qua
-        if (!request.getStartTime().equals(semester.getStartTime().toLocalDate())) {
-            //Nếu đã bắt đầu thì không thể thay đổi
-            if(semester.getStartTime().isBefore(LocalDateTime.now())) throw new AmsException(MessageCode.SEMESTER_START_TIME_HAS_ALREADY_PASSED);
-            //Chưa bắt đầu có thể đổi lịch nhưng phải chọn ngày tương lai
-            if(request.getStartTime().isBefore(LocalDate.now())) throw new AmsException("Start time must be after the present");
-        }
         try {
             semester.setSemesterName(request.getSemesterName());
             semester.setStartTime(request.getStartTime().atStartOfDay());
@@ -165,8 +154,6 @@ public class SemesterServiceImpl implements SemesterService {
         } catch (Exception e){
             throw new AmsException(MessageCode.UPDATE_SEMESTER_FAIL);
         }
-
-
     }
 
     @Override
@@ -182,6 +169,9 @@ public class SemesterServiceImpl implements SemesterService {
         if (semester == null || semester.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
             throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
         }
+
+        if(semester.getStartTime().isBefore(LocalDateTime.now()))
+            throw new AmsException(MessageCode.SEMESTER_START_TIME_HAS_ALREADY_PASSED);
 
         semester.setStatus(Constants.STATUS_TYPE.DELETED);
         semester.setModifiedAt(LocalDateTime.now());

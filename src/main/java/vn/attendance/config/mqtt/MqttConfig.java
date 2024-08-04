@@ -19,8 +19,12 @@ import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.scheduling.annotation.Scheduled;
+import vn.attendance.exception.AmsException;
 import vn.attendance.service.mqtt.service.MqttService;
+import vn.attendance.service.notify.service.NotifyService;
 import vn.attendance.service.server.service.FaceRecognitionService;
+import vn.attendance.util.Constants;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +43,13 @@ public class MqttConfig {
 
     @Autowired
     FaceRecognitionService faceRecognitionService;
+
+    @Autowired
+    private MqttConnectionStatusService connectionStatusService;
+
+    @Autowired
+    NotifyService notifyService;
+
     @Autowired
     MqttService mqttService;
 
@@ -66,22 +77,35 @@ public class MqttConfig {
     @Bean
     public MessageProducer inbound() throws MqttException {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(clientId, mqttPahoClientFactory(), "#");
-
         adapter.setCompletionTimeout(10 * 1000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(2);
         adapter.setOutputChannel(mqttInputChannel());
-
         adapter.setRecoveryInterval(5000);
         adapter.setCompletionTimeout(10000);
         adapter.setRecoveryInterval(10000);
-//
-//        // Set callback handler
-//        MqttClient mqttClient = (MqttClient) mqttPahoClientFactory().getClientInstance(uri, clientId);
-//        MqttCallbackHandler callbackHandler = new MqttCallbackHandler();
-//        mqttClient.setCallback(callbackHandler);
-
         return adapter;
+
+    }
+
+    @Scheduled(fixedDelay = 10000) // Kiểm tra kết nối mỗi 10 giây
+    public void checkConnection() throws AmsException {
+        try {
+            MqttClient testClient = new MqttClient(uri, clientId + "_test", null);
+            testClient.connect(mqttPahoClientFactory().getConnectionOptions());
+            testClient.disconnect();
+            testClient.close();
+            if (!connectionStatusService.isConnected()) {
+                connectionStatusService.setConnected(true);
+                notifyService.addNotifyForDevice(Constants.NOTIFY_TITLE.DEVICE_CONNECT, "Connect to MQTT Broker");
+            }
+        } catch (MqttException e) {
+            log.error("Failed to connect to MQTT broker: {}", e.getMessage());
+            if (connectionStatusService.isConnected()) {
+                connectionStatusService.setConnected(false);
+                notifyService.addNotifyForDevice(Constants.NOTIFY_TITLE.DEVICE_DISCONNECT, "Unable to connect to MQTT Broker");
+            }
+        }
     }
 
     @Bean

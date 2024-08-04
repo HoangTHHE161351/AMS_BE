@@ -53,20 +53,12 @@ public class ServerServiceImpl implements ServerService {
     private SocketController socketController;
 
     @PostConstruct
-    private  void init(){
+    private  void init() throws AmsException, InterruptedException {
         InitTest();
 
         loginServer(deviceIp, devicePort, deviceUsername, devicePassword);
         //Đồng bộ data
-        // Tạo và bắt đầu một thread mới để đồng bộ dữ liệu
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                if(serverInstance.isConnect()) SynchronizeData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        faceRecognitionService.updateAllFace();
     }
 
     private void loginServer(String deviceIp, Integer devicePort, String deviceUsername, String devicePassword) {

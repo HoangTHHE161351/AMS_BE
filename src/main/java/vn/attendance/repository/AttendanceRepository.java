@@ -12,6 +12,7 @@ import vn.attendance.service.attendance.request.IAttendanceDto;
 import vn.attendance.service.attendance.response.AttendanceDTO;
 import vn.attendance.service.attendance.response.IAttendanceDTO;
 import vn.attendance.service.attendance.response.IListAttendenceResponse;
+import vn.attendance.service.schedule.response.ExportScheduleDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -130,33 +131,33 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     List<IAttendanceDTO> findAttendanceByClass(@Param("scheduleId") Integer scheduleId);
 
 
-    @Query(value = "select atten.id     as attendenceId,\n" +
-            "       u.first_name  as  firstName,\n" +
-            "       u.last_name  as lastName,\n" +
-            "       r.role_name  as roleName,\n" +
-            "       u.email      as email,\n" +
-            "       u.phone      as phoneNum,\n" +
-            "       u.gender     as gender,\n" +
-            "       DATE_FORMAT(u.dob, '%d/%m/%Y')        as dob,\n" +
-            "       u.avata as image,\n" +
-            "       atten.status as status\n" +
-            "from attendance atten\n" +
-            "         inner join schedules s on atten.schedule_id = s.id and s.status = 'ACTIVE'\n" +
-            "         inner join users u on atten.user_id = u.id and u.status = 'ACTIVE'\n" +
-            "         inner join roles r on u.role_id = r.id and r.status = 'ACTIVE'\n" +
-            "where (:classId is null or s.class_id = :classId) \n" +
-            "  and date(s.learn_timestamp) = :date1\n" +
-            "order by u.first_name , u.last_name", countQuery = "select atten.id     as attendenceId,\n" +
-            "       u.first_name  as  firstName,\n" +
-            "       u.last_name  as lastName,\n" +
-            "       r.role_name  as roleName,\n" +
-            "       u.email      as email,\n" +
-            "       atten.status as status\n" +
-            "from attendance atten\n" +
-            "         inner join schedules s on atten.schedule_id = s.id and s.status = 'ACTIVE'\n" +
-            "         inner join users u on atten.user_id = u.id and u.status = 'ACTIVE'\n" +
-            "         inner join roles r on u.role_id = r.id and r.status = 'ACTIVE'\n" +
-            "where (:classId is null or s.class_id = :classId)\n" +
+    @Query(value = "select atten.id     as attendenceId, " +
+            "       u.first_name  as  firstName, " +
+            "       u.last_name  as lastName, " +
+            "       r.role_name  as roleName, " +
+            "       u.email      as email, " +
+            "       u.phone      as phoneNum, " +
+            "       u.gender     as gender, " +
+            "       DATE_FORMAT(u.dob, '%d/%m/%Y')        as dob, " +
+            "       u.avata as image, " +
+            "       atten.status as status " +
+            "from attendance atten " +
+            "         inner join schedules s on atten.schedule_id = s.id and s.status = 'ACTIVE' " +
+            "         inner join users u on atten.user_id = u.id and u.status = 'ACTIVE' " +
+            "         inner join roles r on u.role_id = r.id and r.status = 'ACTIVE' " +
+            "where (:classId is null or s.class_id = :classId)  " +
+            "  and date(s.learn_timestamp) = :date1 " +
+            "order by u.first_name , u.last_name", countQuery = "select atten.id     as attendenceId, " +
+            "       u.first_name  as  firstName, " +
+            "       u.last_name  as lastName, " +
+            "       r.role_name  as roleName, " +
+            "       u.email      as email, " +
+            "       atten.status as status " +
+            "from attendance atten " +
+            "         inner join schedules s on atten.schedule_id = s.id and s.status = 'ACTIVE' " +
+            "         inner join users u on atten.user_id = u.id and u.status = 'ACTIVE' " +
+            "         inner join roles r on u.role_id = r.id and r.status = 'ACTIVE' " +
+            "where (:classId is null or s.class_id = :classId) " +
             "  and date(s.learn_timestamp) = date(:date1)", nativeQuery = true)
     Page<IListAttendenceResponse> findAttendanceByClassIdAndDate(Integer classId,
                                                                  LocalDate date1,
@@ -192,5 +193,28 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     List<IAttendanceDto> findAttendance(@Param("semesterId") Integer semesterId,
                                         @Param("userId") Integer userId,
                                         @Param("classId") Integer classId);
+
+    @Query("select new vn.attendance.service.schedule.response.ExportScheduleDto(a.id, " +
+            "       dayname(s.learnTimestamp), " +
+            "       rc.roomName, " +
+            "       c.className, " +
+            "       sb.code, " +
+            "       tc.username, " +
+            "       t.slotName) " +
+            "from Attendance a " +
+            "        inner join Users u on u.id = a.userId and u.status = 'ACTIVE' " +
+            "        inner join Schedule s on a.scheduleId = s.id and s.status = 'ACTIVE' " +
+            "        inner join Users tc on tc.id = s.userId and tc.status = 'ACTIVE' " +
+            "        inner join Semester sm on s.semester = sm.id and sm.status = 'ACTIVE' " +
+            "        inner join ClassRoom c on c.id = s.classId and c.status = 'ACTIVE' " +
+            "        inner join Room rc on rc.id = s.roomId and rc.status = 'ACTIVE' " +
+            "        inner join Subject sb on s.subjectId = sb.id and sb.status = 'ACTIVE' " +
+            "        inner join TimeSlot t on s.timeSlotId = t.id and t.status = 'ACTIVE' " +
+            "        inner join StudentClass sc on a.userId = sc.studentId and sc.classId = s.classId " +
+            "where a.userId = :userId and sm.id = :semesterId " +
+            "order by  s.learnTimestamp")
+    List<ExportScheduleDto> exportSchedules(Integer userId,
+                                            Integer semesterId);
+
 
 }

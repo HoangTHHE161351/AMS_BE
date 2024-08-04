@@ -18,12 +18,16 @@ public interface SubjectService {
     Subject save(Subject subject);
 
     Subject updateSubject(EditSubjectRequest editSubjectRequest) throws AmsException;
-    Page<SubjectDto> searchSubject(String search, int page, int size);
+
+    Page<SubjectDto> searchSubject(String search, String status, int page, int size);
 
     List<ISubjectDto> getDropdownSubject();
+
     Subject deleteSubject(Integer id) throws AmsException;
-    Page<SubjectDto> findSubject(String search, int page, int size);
+
+    Page<SubjectDto> findSubject(String search, String status, int page, int size);
 
     AddSubjectRequest addSubject(AddSubjectRequest request, Integer options) throws AmsException;
+
     List<AddSubjectRequest> importSubject(List<AddSubjectRequest> requests) throws AmsException;
 }

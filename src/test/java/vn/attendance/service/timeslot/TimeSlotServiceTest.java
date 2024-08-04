@@ -8,27 +8,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.exception.AmsException;
-import vn.attendance.model.StudentCurriculum;
-import vn.attendance.model.Subject;
 import vn.attendance.model.TimeSlot;
 import vn.attendance.model.Users;
 import vn.attendance.repository.TimeSlotRepository;
-import vn.attendance.service.curriculum.request.AddCurriculumRequest;
-import vn.attendance.service.student.request.EditStudentCurriculum;
 import vn.attendance.service.timeSlots.request.AddTimeSlotRequest;
 import vn.attendance.service.timeSlots.request.EditTimeSlotRequest;
 import vn.attendance.service.timeSlots.service.impl.TimeSlotServiceImpl;
-
 import vn.attendance.util.Constants;
-import vn.attendance.util.MessageCode;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,7 +59,7 @@ class TimeSlotServiceTest {
 
         );
 
-        AddTimeSlotRequest response = timeSlotService.addTimeSLot(request);
+        AddTimeSlotRequest response = timeSlotService.addTimeSLot(request, 1);
 
         Assertions.assertNotNull(response);
         assertEquals("SUCCESS", response.getStatusAdd());

@@ -50,12 +50,12 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public Subject updateSubject(EditSubjectRequest editSubjectRequest) throws AmsException {
         Users users = BaseUserDetailsService.USER.get();
-        if(users == null){
+        if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
 
         Subject subject = subjectRepository.findById(editSubjectRequest.getId()).orElse(null);
-        if(subject == null || subject.getStatus().equals(Constants.STATUS_TYPE.DELETED)){
+        if (subject == null || subject.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
             throw new AmsException(MessageCode.SUBJECT_NOT_FOUND);
         }
 
@@ -83,7 +83,7 @@ public class SubjectServiceImpl implements SubjectService {
         }
 
         if (subjectRepository.findSubjectByCode(request.getCode()) != null) {
-            if(options == 1) throw new AmsException(MessageCode.SUBJECT_CODE_ALREADY_EXISTS);
+            if (options == 1) throw new AmsException(MessageCode.SUBJECT_CODE_ALREADY_EXISTS);
 
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.SUBJECT_CODE_ALREADY_EXISTS.getCode());
@@ -107,7 +107,7 @@ public class SubjectServiceImpl implements SubjectService {
             subject.setCreatedBy(users.getId());
             subjectRepository.save(subject);
         } catch (Exception e) {
-            if(options == 1) throw new AmsException(MessageCode.ADD_SUBJECT_FAIL);
+            if (options == 1) throw new AmsException(MessageCode.ADD_SUBJECT_FAIL);
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.ADD_SUBJECT_FAIL.getCode());
             return request;
@@ -118,61 +118,62 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<AddSubjectRequest> importSubject(List<AddSubjectRequest> requests) throws AmsException {
-        for (AddSubjectRequest request: requests
-             ) {
+        for (AddSubjectRequest request : requests
+        ) {
             addSubject(request, 0);
         }
         return requests;
     }
 
     @Override
-    public Page<SubjectDto> searchSubject(String search, int page, int size) {
+    public Page<SubjectDto> searchSubject(String search, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        return subjectRepository.searchSubject(search,  pageable);
+        return subjectRepository.searchSubject(search, status, pageable);
     }
 
     @Override
-    public Page<SubjectDto> findSubject(String search, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1,size);
-        return subjectRepository.searchSubject(search,pageable);
+    public Page<SubjectDto> findSubject(String search, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return subjectRepository.searchSubject(search, status, pageable);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Subject deleteSubject(Integer id) throws AmsException{
+    public Subject deleteSubject(Integer id) throws AmsException {
         Users user = BaseUserDetailsService.USER.get();
         if (user == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
 
         Subject subject = subjectRepository.findById(id).orElse(null);
-        if(subject == null || subject.getStatus().equals(Constants.STATUS_TYPE.DELETED)){
+        if (subject == null || subject.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
             throw new AmsException(MessageCode.SUBJECT_NOT_FOUND);
         }
 
-        if(subjectRepository.countScheduleBySubject(id, LocalDate.now())>0) throw new AmsException(MessageCode.SCHEDULES_EXIST_FOR_SUBJECT);
+        if (subjectRepository.countScheduleBySubject(id, LocalDate.now()) > 0)
+            throw new AmsException(MessageCode.SCHEDULES_EXIST_FOR_SUBJECT);
 
         List<TeacherSubject> teacherSubjects = teacherSubjectRepository.findBySubject(id);
-        for (TeacherSubject teacherSubject:teacherSubjects
-             ) {
+        for (TeacherSubject teacherSubject : teacherSubjects
+        ) {
             teacherSubject.setStatus(Constants.STATUS_TYPE.DELETED);
             teacherSubject.setModifiedAt(LocalDateTime.now());
             teacherSubject.setModifiedBy(user.getId());
             teacherSubjectRepository.save(teacherSubject);
         }
 
-        List<ClassSubject> classSubjects =classSubjectRepository.findBySubject(id);
-        for (ClassSubject classSubject: classSubjects
-             ) {
+        List<ClassSubject> classSubjects = classSubjectRepository.findBySubject(id);
+        for (ClassSubject classSubject : classSubjects
+        ) {
             classSubject.setStatus(Constants.STATUS_TYPE.DELETED);
             classSubject.setModifiedAt(LocalDateTime.now());
             classSubject.setModifiedBy(user.getId());
             classSubjectRepository.save(classSubject);
         }
 
-        List<CurriculumSubject> curriculumSubjects =curriculumSubjectRepository.findBySubject(id);
-        for (CurriculumSubject curriculumSubject: curriculumSubjects
+        List<CurriculumSubject> curriculumSubjects = curriculumSubjectRepository.findBySubject(id);
+        for (CurriculumSubject curriculumSubject : curriculumSubjects
         ) {
             curriculumSubject.setStatus(Constants.STATUS_TYPE.DELETED);
             curriculumSubject.setModifiedAt(LocalDateTime.now());

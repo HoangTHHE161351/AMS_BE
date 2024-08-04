@@ -24,5 +24,5 @@ public interface FaceRecognitionService {
     void sendChangeStateRequest(ChangeRequest request) throws AmsException;
     void hotAddUserRequest(Integer userId) throws AmsException;
 
-    void addNotifyForSynchronize(String title, String message) throws AmsException;
+
 }

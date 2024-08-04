@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.attendance.model.ClassSubject;
 import vn.attendance.service.classSubject.response.ClassSubjectDto;
+import vn.attendance.service.classSubject.response.IClassDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,4 +47,14 @@ public interface ClassSubjectRepository extends JpaRepository<ClassSubject, Inte
 
     @Query(value = "select cs.* from class_subject cs where cs.subject_id = :subjectId and cs.status = 'ACTIVE' ",nativeQuery = true)
     List<ClassSubject> findBySubject(Integer subjectId);
+
+    @Query(value = "select cs.id as id, " +
+            " cs.class_id as classId, " +
+            " c.class_name as name, " +
+            " c. description as description " +
+            " from class_subject cs " +
+            " inner join class_room c on c.id = cs.class_id " +
+            " inner join subjects s on s.id = cs.subject_id " +
+            " where cs.status = 'ACTIVE' and cs.subject_id = :subjectId", nativeQuery = true)
+    List<IClassDto> getClassesSubject(Integer subjectId);
 }

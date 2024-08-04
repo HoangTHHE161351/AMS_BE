@@ -15,10 +15,7 @@ import org.springframework.util.StringUtils;
 import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.config.authen.TokenProvider;
 import vn.attendance.exception.AmsException;
-import vn.attendance.model.Role;
-import vn.attendance.model.StudentCurriculum;
-import vn.attendance.model.TeacherSubject;
-import vn.attendance.model.Users;
+import vn.attendance.model.*;
 import vn.attendance.repository.*;
 import vn.attendance.service.user.entity.res.Res;
 import vn.attendance.service.user.entity.res.UserLoginRes;
@@ -212,10 +209,15 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(user);
             request.setStatus(Constants.REQUEST_STATUS.SUCCESS);
-            Users finalUser = user;
             CompletableFuture.supplyAsync(() -> {
                 try {
-                    sendMail(finalUser, token);
+                    sendMail(user, token);
+                    Facial facial = new Facial();
+                    facial.setUserId(user.getId());
+                    facial.setStatus(Constants.STATUS_TYPE.ACTIVE);
+                    facial.setCreatedAt(LocalDateTime.now());
+                    facial.setCreatedBy(users.getId());
+                    facialsRepository.save(facial);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -271,7 +273,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String exportUser(String search, String roleName, String status,
-                                           Integer gender) throws AmsException {
+                             Integer gender) throws AmsException {
         Users users = BaseUserDetailsService.USER.get();
         if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
@@ -450,7 +452,7 @@ public class UserServiceImpl implements UserService {
     public List<AddUserRequest> importUsers(List<AddUserRequest> usersList) throws AmsException {
         List<AddUserRequest> addUserRequests = new ArrayList<>();
         for (AddUserRequest user : usersList) {
-            addUserRequests.add(addUser(user,2));
+            addUserRequests.add(addUser(user, 2));
         }
         return addUserRequests;
     }
@@ -466,19 +468,20 @@ public class UserServiceImpl implements UserService {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
 
 
-        switch (user.getRoleId()){
-            case 1:{
+        switch (user.getRoleId()) {
+            case 1: {
                 throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
             }
-            case 2:{
-                if(users.getRoleId().equals(user.getRoleId())) throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
+            case 2: {
+                if (users.getRoleId().equals(user.getRoleId())) throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
                 break;
             }
-            case 3:{
-                if(scheduleRepository.countScheduleByTeacher(id, LocalDate.now())>0) throw new AmsException(MessageCode.SCHEDULES_EXIST_FOR_TEACHER);
+            case 3: {
+                if (scheduleRepository.countScheduleByTeacher(id, LocalDate.now()) > 0)
+                    throw new AmsException(MessageCode.SCHEDULES_EXIST_FOR_TEACHER);
                 List<TeacherSubject> teacherSubjects = teacherSubjectRepository.findByTeacher(id);
-                for (TeacherSubject teacherSubject: teacherSubjects
-                     ) {
+                for (TeacherSubject teacherSubject : teacherSubjects
+                ) {
                     teacherSubject.setStatus(Constants.STATUS_TYPE.DELETED);
                     teacherSubject.setModifiedAt(LocalDateTime.now());
                     teacherSubject.setModifiedBy(user.getId());
@@ -486,9 +489,9 @@ public class UserServiceImpl implements UserService {
                 }
                 break;
             }
-            case 4:{
+            case 4: {
                 StudentCurriculum studentCurriculum = studentCurriculumRepository.findByStudentId(id);
-                if (studentCurriculum!=null){
+                if (studentCurriculum != null) {
                     studentCurriculum.setStatus(Constants.STATUS_TYPE.DELETED);
                     studentCurriculum.setModifiedAt(LocalDateTime.now());
                     studentCurriculum.setModifiedBy(user.getId());
@@ -496,9 +499,17 @@ public class UserServiceImpl implements UserService {
                 }
                 break;
             }
-            default:{
+            default: {
 
             }
+        }
+
+        List<Facial> facialList = facialsRepository.findFacialByUserId(user.getId());
+        for (Facial facial : facialList) {
+            facial.setStatus(Constants.STATUS_TYPE.DELETED);
+            facial.setModifiedAt(LocalDateTime.now());
+            facial.setModifiedBy(user.getId());
+            facialsRepository.save(facial);
         }
 
         user.setStatus(Constants.STATUS_TYPE.DELETED);
@@ -511,16 +522,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendActiveMail(String email) throws AmsException {
         Users users = BaseUserDetailsService.USER.get();
-        if (users == null) throw  new AmsException(MessageCode.USER_NOT_FOUND);
-        Users user = userRepository.findByEmail(email).orElseThrow(()->new AmsException(MessageCode.USER_NOT_FOUND));
+        if (users == null) throw new AmsException(MessageCode.USER_NOT_FOUND);
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new AmsException(MessageCode.USER_NOT_FOUND));
         String token = tokenProvider.createTokenForNewUser(user.getUsername(), DataUtils.randomPassword());
-        if(StringUtils.hasText(token))    {
+        if (StringUtils.hasText(token)) {
             try {
-                sendMail(users,token);
-            }catch (MessagingException e) {
+                sendMail(users, token);
+            } catch (MessagingException e) {
                 throw new AmsException(MessageCode.SEND_EMAIL_FAIL);
             }
-        }else{
+        } else {
             throw new AmsException(MessageCode.SEND_EMAIL_FAIL);
         }
     }
