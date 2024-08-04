@@ -15,6 +15,7 @@ import vn.attendance.lib.structure.NET_IN_CAMERASTATE;
 import vn.attendance.lib.structure.NET_OUT_CAMERASTATE;
 import vn.attendance.model.Camera;
 import vn.attendance.model.Role;
+import vn.attendance.model.Users;
 import vn.attendance.repository.CameraRepository;
 import vn.attendance.repository.RoleRepository;
 import vn.attendance.service.server.ServerInstance;
@@ -289,10 +290,8 @@ public class DeviceServiceImpl implements DeviceService{
 
         for (Camera camera: cameras
              ) {
-            if(!camera.getStatus().equals(Constants.CAMERA_STATE_TYPE.PENDING)){
-                camera.setStatus(Constants.CAMERA_STATE_TYPE.DISCONNECT);
-                cameraRepository.save(camera);
-            }
+            camera.setStatus(Constants.CAMERA_STATE_TYPE.UNKNOWN);
+            cameraRepository.save(camera);
         }
         if (serverInstance.isConnect()) {
             synchronizeCameraCCTV();
@@ -327,7 +326,7 @@ public class DeviceServiceImpl implements DeviceService{
         List<Camera> cameras = cameraRepository.findAllCameraCCTV();
         for (Camera camera: cameras
         ) {
-            camera.setStatus(Constants.CAMERA_STATE_TYPE.DISCONNECT);
+            camera.setStatus(Constants.CAMERA_STATE_TYPE.UNKNOWN);
             cameraRepository.save(camera);
         }
     }
@@ -382,5 +381,28 @@ public class DeviceServiceImpl implements DeviceService{
             System.err.println("Query Camera State Failed!" + ToolKits.getErrorCode());
         }
         return Constants.CAMERA_STATE_TYPE.ERROR ;
+    }
+
+    @Override
+    public void saveIvssServer(String deviceIp, Integer devicePort, String deviceUsername, String devicePassword){
+        Camera camera = cameraRepository.getIVSS();
+        if(camera == null){
+            camera = new Camera();
+            camera.setCameraType(Constants.DEVICE_TYPE.IVSS);
+        }
+        camera.setIpTcip(deviceIp);
+        camera.setPort(devicePort.toString());
+        camera.setUsername(deviceUsername);
+        camera.setPassword(devicePassword);
+        camera.setRoomId(0);
+        cameraRepository.save(camera);
+    }
+
+    @Override
+    public void changStatusIVSS(String status) throws AmsException {
+        Camera camera = cameraRepository.getIVSS();
+        if(camera == null) throw new AmsException(MessageCode.NOT_FOUND);
+        camera.setStatus(status);
+        cameraRepository.save(camera);
     }
 }

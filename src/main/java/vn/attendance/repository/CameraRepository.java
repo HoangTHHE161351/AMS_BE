@@ -18,7 +18,11 @@ import java.util.List;
 public interface CameraRepository extends JpaRepository<Camera, Integer> {
 
         @Query(value = "SELECT c.id as id, " +
-                " CONCAT(c.camera_type, ' no.', c.id, ' ', r.room_name) as name, " +
+                " CONCAT(c.camera_type, ' no.', c.id, ' ', " +
+                " CASE  " +
+                "       WHEN r.room_name IS NOT NULL THEN r.room_name " +
+                "       ELSE 'CCTV Management' " +
+                " END) as name, " +
                 " c.ip_tcip as ip, " +
                 " c.port as port, " +
                 " c.description as description, " +
@@ -29,17 +33,17 @@ public interface CameraRepository extends JpaRepository<Camera, Integer> {
                 " c.check_type as checkType, " +
                 " c.status " +
                 "FROM Cameras c " +
-                "JOIN Rooms r ON c.room_id = r.id " +
+                "LEFT JOIN Rooms r ON c.room_id = r.id " +
                 "WHERE (:roomId IS NULL OR r.id = :roomId) " +
                 "AND (:status IS NULL OR c.status = :status) " +
                 "AND (:search IS NULL OR c.ip_tcip LIKE concat('%',:search,'%') " +
                 "OR c.port LIKE concat('%',:search,'%') " +
                 "OR c.description LIKE concat('%',:search,'%')) " +
-                "ORDER BY r.room_name DESC",
+                "ORDER BY (CASE WHEN c.camera_type = 'IVSS' THEN 0 ELSE 1 END), r.room_name",
                 nativeQuery = true)
         Page<ICameraRes> findAllCameraCCTV(String search, String status, Integer roomId, Pageable pageable);
 
-        @Query("SELECT c FROM  Camera c WHERE c.status<>'DELETED'")
+        @Query("SELECT c FROM  Camera c WHERE c.status<>'DELETED' and c.cameraType <> 'IVSS' ")
         List<Camera> findAllCamera();
 
         @Query("SELECT c FROM  Camera c WHERE c.status<>'DELETED'")
@@ -79,4 +83,7 @@ public interface CameraRepository extends JpaRepository<Camera, Integer> {
 
         @Query(value = "select count(*) from cameras c where c.status <> 'DELETED' and c.room_id = :id", nativeQuery = true)
          Integer countCameraByRoom(Integer id);
+
+        @Query(value = "select * from Cameras c where c.camera_type = 'IVSS'", nativeQuery = true)
+        Camera getIVSS();
 }

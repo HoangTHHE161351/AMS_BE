@@ -26,4 +26,8 @@ public interface DeviceService {
     void disconectCameraCCTV();
 
     Camera checkCamera(Camera camera);
+
+    void saveIvssServer(String deviceIp, Integer devicePort, String deviceUsername, String devicePassword);
+
+    void changStatusIVSS(String status) throws AmsException;
 }

@@ -21,7 +21,6 @@ import vn.attendance.repository.ClassRoomRepository;
 import vn.attendance.repository.ClassSubjectRepository;
 import vn.attendance.repository.SubjectRepository;
 import vn.attendance.service.classSubject.request.AddClassSubjectRequest;
-import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.classSubject.response.ClassSubjectDto;
 
 import vn.attendance.service.classSubject.service.impl.ClassSubjectImpl;
@@ -80,8 +79,8 @@ class TestClassSubjectService {
     @Test
     void addClassSubject() throws AmsException {
         AddClassSubjectRequest request = new AddClassSubjectRequest();
-        request.setClassId(1);
-        request.setSubjectId(1);
+        request.setClassName("SE1730");
+        request.setSubjectCode("SE101");
 
         ClassRoom classRoom = new ClassRoom();
         classRoom.setStatus(Constants.STATUS_TYPE.ACTIVE);
@@ -93,7 +92,7 @@ class TestClassSubjectService {
         when(subjectRepository.findById(1)).thenReturn(Optional.of(subject));
         when(classSubjectRepository.findAll()).thenReturn(Arrays.asList());
 
-        AddClassSubjectRequest result = classSubjectService.addClassSubject(request);
+        AddClassSubjectRequest result = classSubjectService.addClassSubject(request, 1);
 
         assertEquals("SUCCESS", result.getStatus());
         verify(classSubjectRepository).save(any(ClassSubject.class));

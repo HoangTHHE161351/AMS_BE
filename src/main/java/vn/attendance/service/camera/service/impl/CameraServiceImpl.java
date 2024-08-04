@@ -90,7 +90,7 @@ public class CameraServiceImpl implements CameraService {
             camera.setCreatedBy(users.getId());
             camera.setRoomId(request.getRoomId());
             camera.setChannelId(request.getDeviceName());
-            camera.setStatus(Constants.CAMERA_STATE_TYPE.PENDING);
+            camera.setStatus(Constants.CAMERA_STATE_TYPE.UNKNOWN);
           if(serverInstance.isConnect() && camera.getCameraType().equals(Constants.DEVICE_TYPE.CCTV)){
               camera = deviceService.checkCamera(camera);
               if(camera == null){
@@ -119,7 +119,7 @@ public class CameraServiceImpl implements CameraService {
     private void checkCameraLCD(String ip) {
         var camera = cameraRepository.findCameraLCDByIp(ip);
         if(camera == null) return;
-        if(camera.getStatus().equals(Constants.CAMERA_STATE_TYPE.PENDING)){
+        if(camera.getStatus().equals(Constants.CAMERA_STATE_TYPE.UNKNOWN)){
             camera.setStatus(Constants.CAMERA_STATE_TYPE.ERROR);
         }
     }
@@ -157,7 +157,7 @@ public class CameraServiceImpl implements CameraService {
                 }
             }
             if(camera.getCameraType().equals(Constants.DEVICE_TYPE.LCD)){
-                camera.setStatus(Constants.CAMERA_STATE_TYPE.PENDING);
+                camera.setStatus(Constants.CAMERA_STATE_TYPE.UNKNOWN);
                 Camera finalCamera = camera;
                 Executors.newScheduledThreadPool(1).schedule(() -> checkCameraLCD(finalCamera.getIpTcip()),  10, TimeUnit.SECONDS);
             }

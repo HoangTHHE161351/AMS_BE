@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AddClassSubjectRequest {
     @NotNull(message = "classId is required")
-    private Integer classId;
+    private String className;
 
     @NotNull(message = "subjectId is required")
-    private Integer subjectId;
+    private String subjectCode;
 
     private String errorMess;
     private String status;

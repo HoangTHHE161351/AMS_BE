@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class MqttConnectionStatusService {
 
-    private boolean connected;
+    private Boolean connected = null;
 
-    public boolean isConnected() {
+    public Boolean isConnected() {
         return connected;
     }
 
-    public void setConnected(boolean connected) {
+    public void setConnected(Boolean connected) {
         this.connected = connected;
     }
 }

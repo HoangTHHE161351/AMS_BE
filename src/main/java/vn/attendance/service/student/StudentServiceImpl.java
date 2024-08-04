@@ -18,6 +18,7 @@ import vn.attendance.repository.StudentCurriculumRepository;
 import vn.attendance.repository.StudentRepository;
 import vn.attendance.service.student.request.AddStudentCurriculum;
 import vn.attendance.service.student.request.EditStudentCurriculum;
+import vn.attendance.service.student.response.IDropdownStudentDto;
 import vn.attendance.service.student.response.StudentCurriculumDto;
 import vn.attendance.service.student.response.StudentDto;
 import vn.attendance.service.student.service.StudentService;
@@ -262,5 +263,8 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findStudentCurriculum(search, pageable);
     }
 
-
+    @Override
+    public List<IDropdownStudentDto> dropdownStudent(String search){
+        return studentRepository.dropdownStudent(search);
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.attendance.model.Users;
 import vn.attendance.service.mqtt.entity.UserDto;
+import vn.attendance.service.student.response.IDropdownStudentDto;
 import vn.attendance.service.student.response.StudentCurriculumDto;
 import vn.attendance.service.student.response.StudentDto;
 import vn.attendance.service.user.service.response.UsersDto;
@@ -32,6 +33,7 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
             "and (:search is null " +
             "or u.username like %:search% " +
             "or u.firstName like %:search% " +
+            "or u.email like %:search% " +
             "or u.lastName like %:search% " +
             "or u.address like %:search% " +
             "or u.phone like %:search% ) order by u.createdAt desc")
@@ -121,4 +123,16 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
             " on r.role_name = 'STUDENT' and r.status = 'ACTIVE' and r.id=u.role_id " +
             " where u.id = :id and u.status = 'ACTIVE' ",nativeQuery = true)
     Users getStudentById(Integer id);
+
+    @Query(value = "select s.id as id, " +
+            " s.user_name as studentCode, " +
+            " concat(s.last_name,' ', s.first_name) as fullName " +
+            " from Users s " +
+            " inner join Roles r on s.role_id = r.id and r.role_name = 'STUDENT' " +
+            " where (:search is null or s.user_name LIKE concat('%',:search,'%') " +
+            " OR s.first_name LIKE concat('%',:search,'%') " +
+            " OR s.last_name LIKE concat('%',:search,'%') " +
+            " OR s.email LIKE concat('%',:search,'%') " +
+            " OR s.phone LIKE concat('%',:search,'%')) ", nativeQuery = true)
+    List<IDropdownStudentDto> dropdownStudent(String search);
 }

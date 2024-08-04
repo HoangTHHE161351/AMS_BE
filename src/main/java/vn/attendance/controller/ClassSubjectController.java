@@ -10,6 +10,7 @@ import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.classSubject.service.ClassSubjectService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/class-subject")
@@ -32,16 +33,23 @@ public class ClassSubjectController {
     }
 
 
-    @PostMapping("/add-class-subject")
-    public ApiResponse<AddClassSubjectRequest> addClassSubject(@Valid @RequestBody AddClassSubjectRequest addClassSubjectRequest) throws AmsException {
-        AddClassSubjectRequest response = classSubjectService.addClassSubject(addClassSubjectRequest);
-        return ApiResponse.okStatus(response);
+    @PostMapping("add-class-subject")
+    public ApiResponse<?> addClassSubject(@Valid @RequestBody AddClassSubjectRequest request) throws AmsException {
+        classSubjectService.addClassSubject(request, 1);
+        return ApiResponse.okStatus("Add Subject for Class Success");
     }
+
+    @PostMapping("import-class-subject")
+    public ApiResponse<?> importClassSubject(@Valid @RequestBody List<AddClassSubjectRequest> requestList) throws AmsException {
+
+        return ApiResponse.okStatus(classSubjectService.importClassSubject(requestList));
+    }
+
     @GetMapping("class-subject-details")
     public ApiResponse<?> classSubjectDetails(@RequestParam Integer id) throws AmsException {
         return ApiResponse.okStatus(classSubjectService.findById(id));
     }
-    @DeleteMapping("/delete-class-subject")
+    @DeleteMapping("delete-class-subject")
     public ApiResponse<?> deleteClassSubject(@RequestParam Integer id) throws AmsException {
         classSubjectService.deleteClassSubject(id);
         return ApiResponse.okStatus("Delete Success!");

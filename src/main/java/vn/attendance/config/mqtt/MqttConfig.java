@@ -26,6 +26,7 @@ import vn.attendance.service.notify.service.NotifyService;
 import vn.attendance.service.server.service.FaceRecognitionService;
 import vn.attendance.util.Constants;
 
+import javax.annotation.PostConstruct;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -85,23 +86,23 @@ public class MqttConfig {
         adapter.setCompletionTimeout(10000);
         adapter.setRecoveryInterval(10000);
         return adapter;
-
     }
 
-    @Scheduled(fixedDelay = 10000) // Kiểm tra kết nối mỗi 10 giây
+    @Scheduled(fixedDelay = 10000)
+    @PostConstruct// Kiểm tra kết nối mỗi 10 giây
     public void checkConnection() throws AmsException {
         try {
             MqttClient testClient = new MqttClient(uri, clientId + "_test", null);
             testClient.connect(mqttPahoClientFactory().getConnectionOptions());
             testClient.disconnect();
             testClient.close();
-            if (!connectionStatusService.isConnected()) {
+            if (connectionStatusService.isConnected() == null || !connectionStatusService.isConnected()) {
                 connectionStatusService.setConnected(true);
                 notifyService.addNotifyForDevice(Constants.NOTIFY_TITLE.DEVICE_CONNECT, "Connect to MQTT Broker");
             }
         } catch (MqttException e) {
             log.error("Failed to connect to MQTT broker: {}", e.getMessage());
-            if (connectionStatusService.isConnected()) {
+            if (connectionStatusService.isConnected() == null || connectionStatusService.isConnected()) {
                 connectionStatusService.setConnected(false);
                 notifyService.addNotifyForDevice(Constants.NOTIFY_TITLE.DEVICE_DISCONNECT, "Unable to connect to MQTT Broker");
             }

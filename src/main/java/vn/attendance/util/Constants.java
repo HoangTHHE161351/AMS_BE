@@ -65,7 +65,7 @@ public interface Constants {
         String ACTIVE = "ACTIVE";
         String DELETED = "DELETED";
         String INACTIVE = "INACTIVE";
-        String PENDING = "PENDING";
+        String PENDING = "PENDING_ACTIVATION";
         String NOT_YET ="NOT YET";
         String ATTEND ="ATTEND";
         String ABSENT ="ABSENT";
@@ -74,7 +74,6 @@ public interface Constants {
     interface CAMERA_STATE_TYPE {
         String ACTIVE = "ACTIVE";
         String DELETED = "DELETED";
-        String PENDING = "PENDING";
         String UNKNOWN ="UNKNOWN";
         String CONNECTING ="CONNECTING";
         String DISCONNECT ="DISCONNECT";

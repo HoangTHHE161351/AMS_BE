@@ -57,4 +57,8 @@ public interface ClassSubjectRepository extends JpaRepository<ClassSubject, Inte
             " inner join subjects s on s.id = cs.subject_id " +
             " where cs.status = 'ACTIVE' and cs.subject_id = :subjectId", nativeQuery = true)
     List<IClassDto> getClassesSubject(Integer subjectId);
+
+    @Query(value = "select * from class_subject cs " +
+            " where cs.class_id = :classId and cs.subject_id = :subjectId and cs.status = 'ACTIVE' ", nativeQuery = true)
+    ClassSubject findByClassAndSubject(Integer classId, Integer subjectId);
 }

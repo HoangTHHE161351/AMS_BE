@@ -5,6 +5,7 @@ import vn.attendance.exception.AmsException;
 import vn.attendance.model.Users;
 import vn.attendance.service.student.request.AddStudentCurriculum;
 import vn.attendance.service.student.request.EditStudentCurriculum;
+import vn.attendance.service.student.response.IDropdownStudentDto;
 import vn.attendance.service.student.response.StudentCurriculumDto;
 import vn.attendance.service.student.response.StudentDto;
 import vn.attendance.service.user.service.response.UsersDto;
@@ -31,4 +32,6 @@ public interface StudentService {
     Users deleteStudentCurriculum(Integer id) throws AmsException;
 
     Page<StudentCurriculumDto> searchStudentCurriculum(String search,int page, int size) ;
+
+    List<IDropdownStudentDto> dropdownStudent(String search);
 }

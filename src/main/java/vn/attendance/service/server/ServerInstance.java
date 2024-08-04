@@ -20,8 +20,6 @@ public class ServerInstance {
     private NetSDKLib.LLong cameraHandle = new NetSDKLib.LLong(0);
     private NetSDKLib.LLong realLoadHandle = new NetSDKLib.LLong(0);
     private boolean bConnect = false;
-    private CameraRes serverInfo;
-
     public boolean isConnect(){
         return loginHandle.longValue()!=0&&bConnect;
     }

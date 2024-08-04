@@ -17,9 +17,11 @@ public interface ClassSubjectService {
 
     Page<ClassSubjectDto> findClassSubject(String search, Integer pageNo, Integer pageSize);
     EditClassSubjectRequest editClassSubject(int id, EditClassSubjectRequest editClassSubjectRequest) throws AmsException;
-    AddClassSubjectRequest addClassSubject(AddClassSubjectRequest addClassSubjectRequest) throws AmsException;
+    AddClassSubjectRequest addClassSubject(AddClassSubjectRequest addClassSubjectRequest, Integer option) throws AmsException;
     void deleteClassSubject(Integer id) throws AmsException;
 
 
     List<IClassDto> getClassesSubject(Integer subjectId);
+
+    List<AddClassSubjectRequest> importClassSubject(List<AddClassSubjectRequest> requestList) throws AmsException;
 }

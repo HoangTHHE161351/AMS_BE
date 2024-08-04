@@ -62,7 +62,16 @@ public class ClassSubjectImpl  implements ClassSubjectService {
     }
 
     @Override
-    public AddClassSubjectRequest addClassSubject(AddClassSubjectRequest addClassSubjectRequest) throws AmsException {
+    public List<AddClassSubjectRequest> importClassSubject(List<AddClassSubjectRequest> requestList) throws AmsException {
+        for (AddClassSubjectRequest request: requestList
+             ) {
+            addClassSubject(request, 0);
+        }
+        return requestList;
+    }
+
+    @Override
+    public AddClassSubjectRequest addClassSubject(AddClassSubjectRequest addClassSubjectRequest, Integer option) throws AmsException {
 
         Users users = BaseUserDetailsService.USER.get();
 
@@ -70,45 +79,49 @@ public class ClassSubjectImpl  implements ClassSubjectService {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
 
-        ClassRoom classRoom = classRoomRepository.findById(addClassSubjectRequest.getClassId()).orElse(null);
+        ClassRoom classRoom = classRoomRepository.findClassByName(addClassSubjectRequest.getClassName());
 
         if (classRoom == null || classRoom.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
+            if(option == 1 ) throw new AmsException(MessageCode.CLASS_NOT_FOUND);
             addClassSubjectRequest.setStatus("FAILED");
             addClassSubjectRequest.setErrorMess(MessageCode.CLASS_NOT_FOUND.getCode());
             return addClassSubjectRequest;
         }
 
-        Subject subject = subjectRepository.findById(addClassSubjectRequest.getSubjectId()).orElse(null);
+        Subject subject = subjectRepository.findSubjectByCode(addClassSubjectRequest.getSubjectCode());
 
         if (subject == null || subject.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
+            if(option == 1 ) throw new AmsException(MessageCode.SUBJECT_NOT_FOUND);
             addClassSubjectRequest.setStatus("FAILED");
             addClassSubjectRequest.setErrorMess(MessageCode.SUBJECT_NOT_FOUND.getCode());
             return addClassSubjectRequest;
         }
 
-        List<ClassSubject> classSubjectList = classSubjectRepository.findAll();
+        ClassSubject old = classSubjectRepository.findByClassAndSubject(classRoom.getId(), subject.getId());
 
-        for (ClassSubject classSubject : classSubjectList) {
-            if (classSubject.getSubjectId().equals(addClassSubjectRequest.getSubjectId()) && classSubject.getClassId().equals(addClassSubjectRequest.getClassId())) {
-                addClassSubjectRequest.setStatus("FAILED");
-                addClassSubjectRequest.setErrorMess(MessageCode.CLASS_SUBJECT_EXISTED.getCode());
-                return addClassSubjectRequest;
-            }
+        if (old!=null) {
+            if(option == 1 ) throw new AmsException(MessageCode.CLASS_SUBJECT_EXISTED);
+            addClassSubjectRequest.setStatus("FAILED");
+            addClassSubjectRequest.setErrorMess(MessageCode.CLASS_SUBJECT_EXISTED.getCode());
+            return addClassSubjectRequest;
         }
 
         try {
             ClassSubject classSubject = new ClassSubject();
-            classSubject.setClassId(addClassSubjectRequest.getClassId());
-            classSubject.setSubjectId(addClassSubjectRequest.getSubjectId());
+            classSubject.setClassId(classRoom.getId());
+            classSubject.setSubjectId(subject.getId());
             classSubject.setStatus(Constants.STATUS_TYPE.ACTIVE);
             classSubject.setCreatedAt(LocalDateTime.now());
             classSubject.setCreatedBy(users.getId());
             classSubject.setModifiedBy(users.getId());
             classSubject.setModifiedAt(LocalDateTime.now());
-            addClassSubjectRequest.setStatus("SUCCESS");
             classSubjectRepository.save(classSubject);
+            addClassSubjectRequest.setStatus("SUCCESS");
+
         } catch (Exception e) {
-            throw new AmsException(MessageCode.ADD_CLASS_SUBJECT_FAIL);
+            if (option == 1) throw new AmsException(MessageCode.ADD_CLASS_SUBJECT_FAIL);
+            addClassSubjectRequest.setStatus("FAILED");
+            addClassSubjectRequest.setErrorMess(MessageCode.ADD_CLASS_SUBJECT_FAIL.getCode());
         }
 
         return addClassSubjectRequest;
