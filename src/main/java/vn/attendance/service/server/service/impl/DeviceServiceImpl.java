@@ -389,8 +389,9 @@ public class DeviceServiceImpl implements DeviceService{
         if(camera == null){
             camera = new Camera();
             camera.setCameraType(Constants.DEVICE_TYPE.IVSS);
+            camera.setCheckType(Constants.CHECK_TYPE.MANAGEMENT);
         }
-        camera.setIpTcip(deviceIp);
+        camera.setIpTcip(deviceIp.trim());
         camera.setPort(devicePort.toString());
         camera.setUsername(deviceUsername);
         camera.setPassword(devicePassword);

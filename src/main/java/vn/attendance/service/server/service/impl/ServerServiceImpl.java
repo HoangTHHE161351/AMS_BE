@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ServerServiceImpl implements ServerService {
-    @Value(" ${device.ip}")
+    @Value("${device.ip}")
     private String deviceIp;
 
     @Value("${device.port}")
@@ -102,8 +102,7 @@ public class ServerServiceImpl implements ServerService {
             socketController.sendServerConnectMessage("Login Fail");
             notifyService.addNotifyForDevice(Constants.NOTIFY_TITLE.DEVICE_CONNECT, "Unable to connect to IVSS Server");
             deviceService.changStatusIVSS(Constants.SERVER_CONNECT.DISCONNECT);
-            System.out.printf("CLIENT_LoginWithHighLevelSecurity Failed!LastError = %s\n", ToolKits.getErrorCode());
-            System.out.println(ENUMERROR.getErrorMessage());
+            System.out.printf("Login Fail\nCLIENT_LoginWithHighLevelSecurity Failed!LastError = %s\n", ToolKits.getErrorCode());
         }
     }
 
@@ -115,8 +114,7 @@ public class ServerServiceImpl implements ServerService {
                 //Bật cameraStateCallback
                 deviceService.AttachCameraState();
                 //Bật RealLoadPic
-                logAccessService.AttachRealLoadPic();
-            } catch (Exception e) {
+                logAccessService.AttachRealLoadPic();            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
@@ -132,7 +130,10 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public void login(ServerLoginRequest request) throws AmsException{
         loginServer(request.getIp(), request.getPort(), request.getUser(), request.getPassword());
+
         SynchronizeData();
+        if(!serverInstance.isConnect()) throw new AmsException("Login Fail");
+
     }
 
     @Override

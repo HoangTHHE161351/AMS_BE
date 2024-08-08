@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface CameraService {
     Page<CameraRes> findAllCamera(String search, String status, Integer roomId, int page, int size);
-    AddCameraRequest addCamera(AddCameraRequest request) throws AmsException;
+    AddCameraRequest addCamera(AddCameraRequest request, Integer option ) throws AmsException;
     void editCamera(EditCameraRequest request) throws AmsException;
     void deleteCamera(Integer cameraId) throws AmsException;
 

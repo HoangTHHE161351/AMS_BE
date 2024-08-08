@@ -32,7 +32,7 @@ public class CameraController {
     @PostMapping("add-camera")
     @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
     public ApiResponse<?> addCamera(@RequestBody @Valid AddCameraRequest request) throws AmsException {
-        return ApiResponse.okStatus(cameraService.addCamera(request));
+        return ApiResponse.okStatus(cameraService.addCamera(request, 1));
     }
 
     @PutMapping("edit-camera")

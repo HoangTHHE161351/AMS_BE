@@ -1,6 +1,5 @@
 package vn.attendance.service.notify.service;
 
-import org.springframework.data.domain.Page;
 import vn.attendance.exception.AmsException;
 import vn.attendance.model.Notify;
 import vn.attendance.service.notify.entity.NotifyDto;
@@ -10,7 +9,7 @@ import java.util.List;
 
 public interface NotifyService {
 
-    List<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException;
+    List<NotifyDto> findAll(String search, Integer roomId, LocalDate date) throws AmsException;
 
     Integer checkReadNotify() throws AmsException;
 

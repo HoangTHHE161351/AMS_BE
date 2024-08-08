@@ -29,8 +29,7 @@ public interface NotifyRepository extends JpaRepository<Notify, Integer> {
             " nu.user_id = :userId " +
             "ORDER BY n.time DESC",
             nativeQuery = true)
-    List<NotifyDto> findNotify(@Param("userId") Integer userId,
-                               Pageable pageable);
+    List<NotifyDto> findNotify(@Param("userId") Integer userId);
 
     @Query(value = "SELECT COUNT(*) FROM notify n " +
             "JOIN notify_user nu ON n.id = nu.notify_id " +

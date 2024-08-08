@@ -58,6 +58,9 @@ public interface CameraRepository extends JpaRepository<Camera, Integer> {
         @Query("select c from Camera c where c.channelId = :channelId and c.status <> 'DELETED' ")
         Camera getCameraByChannel(Integer channelId);
 
+        @Query("select c from Camera c where c.ipTcip = :ipTcpip and c.status <> 'DELETED' ")
+        Camera getCameraByIpPort(String ipTcpip);
+
         @Query("select c from Camera c where c.ipTcip = :ipTcpip and c.port = :port and c.status <> 'DELETED' ")
         Camera getCameraByIpPort(String ipTcpip, String port);
 

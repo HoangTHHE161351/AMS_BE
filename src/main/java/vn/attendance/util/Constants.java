@@ -126,6 +126,7 @@ public interface Constants {
         String IN = "IN";
         String OUT = "OUT";
         String ADD = "ADD";
+        String MANAGEMENT = "MANAGEMENT";
     }
 
     interface SCREEN_NAME{

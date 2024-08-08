@@ -18,10 +18,8 @@ public class NotifyController {
     @GetMapping("get-notifies")
     public ApiResponse<?> getNotifies(@RequestParam(required = false) String search,
                                       @RequestParam(required = false) Integer roomId,
-                                      @RequestParam(required = false) LocalDate date,
-                                      @RequestParam(defaultValue = "1") Integer page,
-                                      @RequestParam(defaultValue = "20") Integer size) throws AmsException {
-        return ApiResponse.okStatus(notifyService.findAll(search, roomId, date, page, size));
+                                      @RequestParam(required = false) LocalDate date) throws AmsException {
+        return ApiResponse.okStatus(notifyService.findAll(search, roomId, date));
     }
 
     @GetMapping("check-read-notify")

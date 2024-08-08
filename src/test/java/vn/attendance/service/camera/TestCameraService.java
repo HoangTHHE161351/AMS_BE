@@ -74,7 +74,7 @@ public class TestCameraService {
         request.setIpTcpip("invalid_ip");
         request.setPort(String.valueOf(8080));
 
-        AddCameraRequest result = cameraService.addCamera(request);
+        AddCameraRequest result = cameraService.addCamera(request, 1);
 
         assertEquals(Constants.REQUEST_STATUS.FAILED, result.getStatus());
         assertEquals(MessageCode.FORMAT_FAIL.getCode(), result.getErrorMess());
@@ -90,7 +90,7 @@ public class TestCameraService {
 
         when(cameraRepository.getCameraByIpPort(request.getIpTcpip(), request.getPort())).thenReturn(new Camera());
 
-        AddCameraRequest result = cameraService.addCamera(request);
+        AddCameraRequest result = cameraService.addCamera(request,1);
 
         assertEquals(Constants.REQUEST_STATUS.FAILED, result.getStatus());
         assertEquals(MessageCode.CAMERA_ALREADY_EXISTED.getCode(), result.getErrorMess());
@@ -106,7 +106,7 @@ public class TestCameraService {
         when(cameraRepository.getCameraByIpPort(request.getIpTcpip(), request.getPort())).thenReturn(null);
         when(roomRepository.getById(request.getRoomId())).thenReturn(null);
 
-        AddCameraRequest result = cameraService.addCamera(request);
+        AddCameraRequest result = cameraService.addCamera(request,1);
 
         assertEquals(Constants.REQUEST_STATUS.FAILED, result.getStatus());
         assertEquals(MessageCode.ROOM_NOT_FOUND.getCode(), result.getErrorMess());
@@ -125,7 +125,7 @@ public class TestCameraService {
         when(serverInstance.isConnect()).thenReturn(true);
         when(deviceService.checkCamera(any(Camera.class))).thenReturn(null);
 
-        AddCameraRequest result = cameraService.addCamera(request);
+        AddCameraRequest result = cameraService.addCamera(request,1);
 
         assertEquals(Constants.REQUEST_STATUS.FAILED, result.getStatus());
         assertEquals(MessageCode.CAMERA_NOT_FOUND.getCode(), result.getErrorMess());

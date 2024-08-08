@@ -53,25 +53,28 @@ public class CameraServiceImpl implements CameraService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public AddCameraRequest addCamera(AddCameraRequest request) throws AmsException {
+    public AddCameraRequest addCamera(AddCameraRequest request, Integer option) throws AmsException {
         // Lấy thông tin người dùng
         Users users = BaseUserDetailsService.USER.get();
         if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
         if (!isValidIpFormat(request.getIpTcpip())) {
+            if (option == 1 ) throw new AmsException(MessageCode.FORMAT_FAIL);
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.FORMAT_FAIL.getCode());
             return request;
         }
 
         try {
-            if(cameraRepository.getCameraByIpPort(request.getIpTcpip(), request.getPort())!=null){
+            if(cameraRepository.getCameraByIpPort(request.getIpTcpip())!=null){
+                if (option == 1 ) throw new AmsException(MessageCode.CAMERA_ALREADY_EXISTED);
                 request.setStatus(Constants.REQUEST_STATUS.FAILED);
                 request.setErrorMess(MessageCode.CAMERA_ALREADY_EXISTED.getCode());
                 return request;
             }
             if(roomRepository.getById(request.getRoomId())==null){
+                if (option == 1 ) throw new AmsException(MessageCode.ROOM_NOT_FOUND);
                 request.setStatus(Constants.REQUEST_STATUS.FAILED);
                 request.setErrorMess(MessageCode.ROOM_NOT_FOUND.getCode());
                 return request;
@@ -89,27 +92,25 @@ public class CameraServiceImpl implements CameraService {
             camera.setCreatedAt(LocalDateTime.now());
             camera.setCreatedBy(users.getId());
             camera.setRoomId(request.getRoomId());
-            camera.setChannelId(request.getDeviceName());
+            if(request.getCameraType().equals(Constants.DEVICE_TYPE.LCD))
+                camera.setChannelId(request.getDeviceName());
             camera.setStatus(Constants.CAMERA_STATE_TYPE.UNKNOWN);
           if(serverInstance.isConnect() && camera.getCameraType().equals(Constants.DEVICE_TYPE.CCTV)){
               camera = deviceService.checkCamera(camera);
               if(camera == null){
+                  if (option == 1 ) throw new AmsException(MessageCode.ADD_CAMERA_FAIL);
                   request.setStatus(Constants.REQUEST_STATUS.FAILED);
-                  request.setErrorMess(MessageCode.CAMERA_NOT_FOUND.getCode());
+                  request.setErrorMess(MessageCode.ADD_CAMERA_FAIL.getCode());
                   return request;
               }
           }
+        // Lưu camera vào database
+        cameraRepository.save(camera);
 
-        if(camera.getCameraType().equals(Constants.DEVICE_TYPE.LCD)){
-            Camera finalCamera = camera;
-            Executors.newScheduledThreadPool(1).schedule(() -> checkCameraLCD(finalCamera.getIpTcip()),  10, TimeUnit.SECONDS);
-        }
-            // Lưu camera vào database
-            cameraRepository.save(camera);
-
-            request.setStatus(Constants.REQUEST_STATUS.SUCCESS);
-            return request;
+        request.setStatus(Constants.REQUEST_STATUS.SUCCESS);
+        return request;
         } catch (Exception e) {
+            if (option == 1 ) throw new AmsException(MessageCode.ADD_CAMERA_FAIL);
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.ADD_CAMERA_FAIL.getCode());
             return request;
@@ -144,8 +145,10 @@ public class CameraServiceImpl implements CameraService {
             camera.setIpTcip(request.getIpTcpip());
             camera.setPort(request.getPort());
             camera.setDescription(request.getDescription());
-            camera.setUsername(request.getUsername());
-            camera.setPassword(request.getPassword());
+            if(request.getUsername()!=null && !request.getUsername().trim().isEmpty())
+                camera.setUsername(request.getUsername());
+            if(request.getPassword()!=null && !request.getPassword().trim().isEmpty())
+                camera.setPassword(request.getPassword());
             camera.setCameraType(request.getCameraType());
             camera.setCheckType(request.getCheckType());
             camera.setModifiedAt(LocalDateTime.now());
@@ -171,13 +174,18 @@ public class CameraServiceImpl implements CameraService {
 
     @Override
     public void deleteCamera(Integer cameraId) throws AmsException {
-        try {
+        Users users = BaseUserDetailsService.USER.get();
+        if(users == null) throw new AmsException(MessageCode.USER_NOT_FOUND);
             var camera = cameraRepository.getById(cameraId);
+            if(camera == null || camera.getStatus().equals(Constants.CAMERA_STATE_TYPE.DELETED)) throw new AmsException(MessageCode.CAMERA_NOT_FOUND);
+        try {
             camera.setStatus(Constants.STATUS_TYPE.DELETED);
+            camera.setModifiedAt(LocalDateTime.now());
+            camera.setModifiedBy(users.getId());
             cameraRepository.save(camera);
         } catch (Exception e) {
 
-            throw new AmsException(MessageCode.DELETE_USER_FACE_FAIL);
+            throw new AmsException(MessageCode.DELETE_CAMERA_FAIL);
         }
     }
 
@@ -185,7 +193,7 @@ public class CameraServiceImpl implements CameraService {
     public List<AddCameraRequest> importCamera(List<AddCameraRequest> cameraList) throws AmsException {
         for (var camera: cameraList
              ) {
-            addCamera(camera);
+            addCamera(camera, 0);
         }
         return cameraList;
     }
@@ -208,6 +216,7 @@ public class CameraServiceImpl implements CameraService {
             throw new AmsException(MessageCode.ROOM_NOT_FOUND);
         }
         List<Camera> cameras = cameraRepository.findAllCameraCCTV(roomId);
+        if(cameras.size()<=0) throw new AmsException(MessageCode.CAMERA_NOT_FOUND_IN_ROOM);
         sendCameraAccessByEmail(cameras);
     }
 

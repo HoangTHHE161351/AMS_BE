@@ -2,7 +2,6 @@ package vn.attendance.service.notify.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import vn.attendance.config.authen.BaseUserDetailsService;
@@ -41,11 +40,11 @@ public class NotifyServiceImpl implements NotifyService {
     SocketController socketController;
 
     @Override
-    public List<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException {
+    public List<NotifyDto> findAll(String search, Integer roomId, LocalDate date) throws AmsException {
         Users user = BaseUserDetailsService.USER.get();
         if(user == null) throw new AmsException(MessageCode.USER_NOT_FOUND);
 
-        return notifyRepository.findNotify(user.getId(), PageRequest.of(page - 1, size));
+        return notifyRepository.findNotify(user.getId());
     }
 
     @Override
