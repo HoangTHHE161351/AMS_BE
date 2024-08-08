@@ -88,7 +88,7 @@ public class ScheduleImp implements ScheduleService {
     List<Schedule> schedules;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         // Tạo các map
         roomIndexMap = roomRepository.findAllRooms().stream()
                 .filter(room -> room.getRoomName() != null)

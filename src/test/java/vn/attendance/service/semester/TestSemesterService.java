@@ -17,6 +17,7 @@ import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.exception.AmsException;
 import vn.attendance.model.*;
 import vn.attendance.repository.SemesterRepository;
+import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.semester.request.AddSemesterRequest;
 import vn.attendance.service.semester.request.EditSemesterRequest;
 import vn.attendance.service.semester.response.SemesterDto;
@@ -209,7 +210,6 @@ public class TestSemesterService {
         assertEquals(Constants.REQUEST_STATUS.SUCCESS, response.getStatus());
     }
 
-    // Test case to verify update of a non-existing semester
     @Test
     public void updateSemester_NotFound() {
         EditSemesterRequest request = new EditSemesterRequest(
@@ -230,7 +230,6 @@ public class TestSemesterService {
 
         assertEquals(MessageCode.SEMESTER_NOT_FOUND.getCode(), exception.getMessage());
     }
-
 
 
 

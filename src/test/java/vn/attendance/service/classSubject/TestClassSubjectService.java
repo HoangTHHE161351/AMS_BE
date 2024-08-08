@@ -21,17 +21,19 @@ import vn.attendance.repository.ClassRoomRepository;
 import vn.attendance.repository.ClassSubjectRepository;
 import vn.attendance.repository.SubjectRepository;
 import vn.attendance.service.classSubject.request.AddClassSubjectRequest;
+import vn.attendance.service.classSubject.request.EditClassSubjectRequest;
 import vn.attendance.service.classSubject.response.ClassSubjectDto;
 
 import vn.attendance.service.classSubject.service.impl.ClassSubjectImpl;
 import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -57,6 +59,7 @@ class TestClassSubjectService {
         testUser.setRoleId(1);
         testUser.setId(1);
         BaseUserDetailsService.USER.set(testUser);
+
     }
 
     @Test
@@ -104,7 +107,78 @@ class TestClassSubjectService {
         classSubjectService.deleteClassSubject(id);
         assertEquals(Constants.STATUS_TYPE.DELETED, classSubject.getStatus());
     }
+    @Test
+    void deleteClassSubject_ClassSubjectNotFound() {
+        Integer id = 1;
+        when(classSubjectRepository.findById(id)).thenReturn(Optional.empty());
 
+        AmsException exception = assertThrows(AmsException.class, () -> {
+            classSubjectService.deleteClassSubject(id);
+        });
 
+        assertEquals(MessageCode.CLASS_SUBJECT_NOT_FOUND.getCode(), exception.getMessage());
+    }
+    @Test
+    void testEditClassSubject_UserNotFound() {
+        BaseUserDetailsService.USER.set(null);
+        EditClassSubjectRequest request = new EditClassSubjectRequest();
+        AmsException exception = assertThrows(AmsException.class, () -> {
+            classSubjectService.editClassSubject(1, request);
+        });
+        assertEquals(MessageCode.USER_NOT_FOUND.getCode(), exception.getMessage());
+    }
 
+    @Test
+    void testEditClassSubject_SubjectNotFound() throws AmsException {
+        ClassSubject classSubject = new ClassSubject();
+        classSubject.setId(1);
+        classSubject.setStatus(Constants.STATUS_TYPE.ACTIVE);
+
+        ClassRoom classRoom = new ClassRoom();
+        classRoom.setStatus(Constants.STATUS_TYPE.ACTIVE);
+
+        when(classSubjectRepository.findById(1)).thenReturn(Optional.of(classSubject));
+        when(classRoomRepository.findById(1)).thenReturn(Optional.of(classRoom));
+        when(subjectRepository.findById(1)).thenReturn(Optional.empty());
+
+        EditClassSubjectRequest request = new EditClassSubjectRequest();
+        request.setClassId(1);
+        request.setSubjectId(1);
+
+        EditClassSubjectRequest result = classSubjectService.editClassSubject(1, request);
+
+        assertEquals("FAILED", result.getStatus());
+        assertEquals(MessageCode.SUBJECT_NOT_FOUND.getCode(), result.getErrorMess());
+    }
+    @Test
+    void testEditClassSubject_Success() throws AmsException {
+        ClassSubject classSubject = new ClassSubject();
+        classSubject.setId(1);
+        classSubject.setClassId(1);
+        classSubject.setSubjectId(1);
+        classSubject.setStatus(Constants.STATUS_TYPE.ACTIVE);
+
+        ClassRoom classRoom = new ClassRoom();
+        classRoom.setId(1);
+        classRoom.setStatus(Constants.STATUS_TYPE.ACTIVE);
+
+        Subject subject = new Subject();
+        subject.setId(1);
+        subject.setStatus(Constants.STATUS_TYPE.ACTIVE);
+
+        when(classSubjectRepository.findById(1)).thenReturn(Optional.of(classSubject));
+        when(classRoomRepository.findById(1)).thenReturn(Optional.of(classRoom));
+        when(subjectRepository.findById(1)).thenReturn(Optional.of(subject));
+        when(classSubjectRepository.findAll()).thenReturn(Arrays.asList(classSubject));
+
+        EditClassSubjectRequest request = new EditClassSubjectRequest();
+        request.setClassId(1);
+        request.setSubjectId(1);
+
+        EditClassSubjectRequest result = classSubjectService.editClassSubject(1, request);
+
+        assertEquals("SUCCESS", result.getStatus());
+
+        verify(classSubjectRepository).save(any(ClassSubject.class));
+    }
 }

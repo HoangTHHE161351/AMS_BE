@@ -1,10 +1,12 @@
 package vn.attendance.util;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
+
 public enum MessageCode implements MessageCodeEnum {
     NOT_FOUND("Not Found"),
     ROLE_NOT_FOUND("Role Not Found"),
