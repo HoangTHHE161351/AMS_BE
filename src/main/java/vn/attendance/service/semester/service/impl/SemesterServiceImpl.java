@@ -10,6 +10,8 @@ import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.exception.AmsException;
 import vn.attendance.model.Semester;
 import vn.attendance.model.Users;
+import vn.attendance.repository.CurriculumRepository;
+import vn.attendance.repository.CurriculumSubjectRepository;
 import vn.attendance.repository.SemesterRepository;
 import vn.attendance.service.semester.request.AddSemesterRequest;
 import vn.attendance.service.semester.request.EditSemesterRequest;
@@ -26,8 +28,12 @@ import java.util.Map;
 
 @Service
 public class SemesterServiceImpl implements SemesterService {
+
     @Autowired
     SemesterRepository semesterRepository;
+
+    @Autowired
+    CurriculumSubjectRepository subjectRepository;
 
     @Override
     public Page<SemesterDto> searchSemester(String search, String status, int page, int size) {
@@ -43,12 +49,11 @@ public class SemesterServiceImpl implements SemesterService {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
 
-        List<Semester> semesterList = semesterRepository.findAll();
-
+        List<Semester> semesterList = semesterRepository.findAllSemesters();
 
         Semester old = semesterRepository.findSemestersByName(request.getSemesterName());
-        if(old!= null) {
-            if (option == 1 ) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
+        if (old != null) {
+            if (option == 1) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
 
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.SEMESTER_NAME_ALREADY_EXISTS.getCode());
@@ -56,7 +61,7 @@ public class SemesterServiceImpl implements SemesterService {
         }
 
         if (!isValidTimeRange(request.getStartTime(), request.getEndTime())) {
-            if (option == 1 ) throw new AmsException(MessageCode.INVALID_TIME_RANGE);
+            if (option == 1) throw new AmsException(MessageCode.INVALID_TIME_RANGE);
 
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.INVALID_TIME_RANGE.getCode());
@@ -64,27 +69,39 @@ public class SemesterServiceImpl implements SemesterService {
         }
 
         if (request.getStartTime().isBefore(LocalDate.now())) {
-            if (option == 1 ) throw new AmsException("The start and end times must be from "+ LocalDate.now() +" or later.");
+            if (option == 1)
+                throw new AmsException("The start and end times must be from " + LocalDate.now() + " or later.");
 
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess("The start and end times must be from "+ LocalDate.now() +" or later.");
+            request.setErrorMess("The start and end times must be from " + LocalDate.now() + " or later.");
+            return request;
+        }
+
+        Semester semester = new Semester();
+        semester.setSemesterName(request.getSemesterName());
+        semester.setStartTime(request.getStartTime().atStartOfDay());
+        semester.setEndTime(request.getEndTime().atStartOfDay());
+
+        if (!validateTimeOverlap(semester)) {
+            if (option == 1)
+                throw new AmsException("The new semester's time period overlaps with an existing semester.");
+            request.setStatus(Constants.REQUEST_STATUS.FAILED);
+            request.setErrorMess("The new semester's time period overlaps with an existing semester.");
             return request;
         }
 
         try {
-            Semester semester = new Semester();
-            semester.setSemesterName(request.getSemesterName());
-            semester.setStartTime(request.getStartTime().atStartOfDay());
-            semester.setEndTime(request.getEndTime().atStartOfDay());
+
             semester.setDescription(request.getDescription());
             semester.setStatus(Constants.STATUS_TYPE.ACTIVE);
             semester.setCreatedAt(LocalDateTime.now());
             semester.setCreatedBy(users.getId());
+
             semesterList.add(semester);
             semesterRepository.save(semester);
         } catch (Exception e) {
             e.printStackTrace();
-            if (option == 1 ) throw new AmsException(MessageCode.ADD_SEMESTER_FAIL);
+            if (option == 1) throw new AmsException(MessageCode.ADD_SEMESTER_FAIL);
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.ADD_SEMESTER_FAIL.getCode());
             return request;
@@ -101,7 +118,7 @@ public class SemesterServiceImpl implements SemesterService {
     @Override
     public List<AddSemesterRequest> importSemester(List<AddSemesterRequest> requests) throws AmsException {
         for (AddSemesterRequest request : requests
-        ){
+        ) {
             addSemester(request, 0);
         }
         return requests;
@@ -109,6 +126,23 @@ public class SemesterServiceImpl implements SemesterService {
 
     private boolean isValidTimeRange(LocalDate startTime, LocalDate endTime) {
         return startTime.isBefore(endTime);
+    }
+
+    private boolean validateTimeOverlap(Semester semester) {
+        List<Semester> existingSemesters = semesterRepository.findAllSemesters();
+
+        for (Semester existing : existingSemesters) {
+            if (semester.getId() == null || !semester.getId().equals(existing.getId())) {
+                if (overlaps(semester.getStartTime(), semester.getEndTime(), existing.getStartTime(), existing.getEndTime())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean overlaps(LocalDateTime start1, LocalDateTime end1, LocalDateTime start2, LocalDateTime end2) {
+        return start1.isBefore(end2) && end1.isAfter(start2);
     }
 
     @Override
@@ -125,23 +159,28 @@ public class SemesterServiceImpl implements SemesterService {
             throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
         }
         Semester old = semesterRepository.findSemestersByName(request.getSemesterName());
-        if(old!= null && !old.getId().equals(request.getId())) throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
+        if (old != null && !old.getId().equals(request.getId()))
+            throw new AmsException(MessageCode.SEMESTER_NAME_ALREADY_EXISTS);
 
         if (!isValidTimeRange(request.getStartTime(), request.getEndTime())) {
             throw new AmsException(MessageCode.INVALID_TIME_RANGE);
         }
 
-        if(semester.getStartTime().isBefore(LocalDateTime.now()))
+        if (semester.getStartTime().isBefore(LocalDateTime.now()))
             throw new AmsException(MessageCode.SEMESTER_START_TIME_HAS_ALREADY_PASSED);
 
         if (request.getStartTime().isBefore(LocalDate.now())) {
-            throw new AmsException("The start and end times must be from "+ LocalDate.now() +" or later.");
+            throw new AmsException("The start and end times must be from " + LocalDate.now() + " or later.");
         }
 
         try {
             semester.setSemesterName(request.getSemesterName());
             semester.setStartTime(request.getStartTime().atStartOfDay());
             semester.setEndTime(request.getEndTime().atStartOfDay());
+
+            if (!validateTimeOverlap(semester)) {
+                throw new AmsException("The new semester's time period overlaps with an existing semester.");
+            }
 
             semester.setDescription(request.getDescription());
             semester.setStatus(Constants.STATUS_TYPE.ACTIVE);
@@ -151,7 +190,7 @@ public class SemesterServiceImpl implements SemesterService {
 
             request.setStatus(Constants.REQUEST_STATUS.SUCCESS);
             return request;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new AmsException(MessageCode.UPDATE_SEMESTER_FAIL);
         }
     }
@@ -170,8 +209,10 @@ public class SemesterServiceImpl implements SemesterService {
             throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
         }
 
-        if(semester.getStartTime().isBefore(LocalDateTime.now()))
+        if (semester.getStartTime().isBefore(LocalDateTime.now()))
             throw new AmsException(MessageCode.SEMESTER_START_TIME_HAS_ALREADY_PASSED);
+
+//        if (subjectRepository.find)
 
         semester.setStatus(Constants.STATUS_TYPE.DELETED);
         semester.setModifiedAt(LocalDateTime.now());

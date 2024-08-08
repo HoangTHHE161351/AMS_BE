@@ -35,7 +35,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Query("select r from Room r where r.status = 'ACTIVE'")
     List<Room> findAll();
 
-    @Query("select count(r.id) from Room r")
+    @Query("select count(r.id) from Room r where r.status = 'ACTIVE'")
     int countRoom();
 
     @Query("select r from Room r where r.status = 'ACTIVE'")

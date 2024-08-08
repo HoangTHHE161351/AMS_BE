@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface NotifyService {
 
-    Page<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException;
+    List<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException;
 
     Integer checkReadNotify() throws AmsException;
 

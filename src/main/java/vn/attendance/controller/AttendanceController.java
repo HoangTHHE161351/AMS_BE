@@ -27,7 +27,12 @@ public class AttendanceController {
     @GetMapping("attendance-report")
     public ApiResponse<?> attendanceReport(@RequestParam Integer semesterId,
                                            @RequestParam Integer classId) throws Exception {
-        return ApiResponse.okStatus(attendanceService.attendanceReport(semesterId, classId));
+            return ApiResponse.okStatus(attendanceService.attendanceReport(semesterId, classId));
+    }
+
+    @GetMapping("attendance-class-dropdown")
+    public ApiResponse<?> attendanceClassDropdown(@RequestParam Integer semesterId) throws Exception {
+        return ApiResponse.okStatus(attendanceService.attendanceClassDropdown(semesterId));
     }
 
     @GetMapping("attendance-class")

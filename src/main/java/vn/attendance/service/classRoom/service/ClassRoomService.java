@@ -8,6 +8,7 @@ import vn.attendance.service.classRoom.request.EditClassRoomRequest;
 import vn.attendance.service.classRoom.response.ClassRoomDto;
 import vn.attendance.service.classRoom.response.IClassDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ClassRoomService {
@@ -29,4 +30,6 @@ public interface ClassRoomService {
     byte[] exportClassRoom(String search) throws AmsException;
 
     List<AddClassRoomRequest> importClassRoom(List<AddClassRoomRequest> classRoomRequests) throws AmsException;
+
+    List<IClassDto> searchClassRoomForSchedule(Integer subjectId, LocalDate date, Integer slotId);
 }

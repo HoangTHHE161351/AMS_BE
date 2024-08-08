@@ -12,6 +12,7 @@ import vn.attendance.service.teacher.response.ITeacherDto;
 import vn.attendance.service.teacher.response.TeacherDto;
 import vn.attendance.service.user.service.response.UsersDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,4 +113,17 @@ public interface TeacherRepository extends JpaRepository<Users, Integer> {
     @Query(value = "select u.* from Users u join Roles r on u.role_id = r.id and r.status = 'ACTIVE'" +
             " where r.role_name = 'TEACHER' and u.status = 'ACTIVE' and u.user_name = :teacherCode", nativeQuery = true)
     Users findTeacherByCode(String teacherCode);
+
+    @Query(value = "select u.id as id, " +
+            " concat(u.last_name,' ', u.first_name) as name, " +
+            " u.user_name as username " +
+            " FROM Users u " +
+            " JOIN roles r ON u.role_id = r.id " +
+            " JOIN teacher_subject ts ON u.id = ts.teacher_id " +
+            " where r.role_name = 'TEACHER' " +
+            " and (:subjectId is null or ts.subject_id = :subjectId) " +
+            "AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.user_id = u.id AND s.time_slot_id = :slotId and Date(s.learn_timestamp) = Date(:date) and s.status = 'ACTIVE') " +
+            " and u.status = 'ACTIVE' " +
+            " and ts.status = 'ACTIVE' ", nativeQuery = true)
+    List<ITeacherDto> getTeacherForSchedule(Integer subjectId, LocalDate date, Integer slotId);
 }

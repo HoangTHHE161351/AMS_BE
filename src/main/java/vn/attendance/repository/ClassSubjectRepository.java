@@ -61,4 +61,7 @@ public interface ClassSubjectRepository extends JpaRepository<ClassSubject, Inte
     @Query(value = "select * from class_subject cs " +
             " where cs.class_id = :classId and cs.subject_id = :subjectId and cs.status = 'ACTIVE' ", nativeQuery = true)
     ClassSubject findByClassAndSubject(Integer classId, Integer subjectId);
+
+    @Query(value = "select cs.* from class_subject cs where cs.class_id = :classId and cs.status = 'ACTIVE' ", nativeQuery = true)
+    List<ClassSubject> findByClass(Integer classId);
 }

@@ -217,10 +217,13 @@ public class CameraServiceImpl implements CameraService {
         StringBuilder content = new StringBuilder();
 
         // Build the content of the email with camera details
-        content.append("Here are the camera details: <br><br>");
+        content.append("Here are the device details: <br><br>");
 
         for (Camera camera : cameras) {
-            content.append("IP Address: ").append(camera.getIpTcip()).append("<br>")
+            String ipLink = "<a href=\"http://" + camera.getIpTcip().trim() + "\">" + camera.getIpTcip() + "</a>";
+
+            content.append("IP Address: ").append(ipLink).append("<br>")
+                    .append("Type: ").append(camera.getCameraType()).append("<br>")
                     .append("Username: ").append(camera.getUsername()).append("<br>")
                     .append("Password: ").append(camera.getPassword()).append("<br><br>");
         }
@@ -230,9 +233,9 @@ public class CameraServiceImpl implements CameraService {
         try {
             emailService.sendSimpleMessage(
                     users.getEmail(),
-                    "Camera Access",
+                    "Device Access",
                     users.getUsername(),
-                    "Camera Access",
+                    "Device Access",
                     content.toString(),
                     null,  // Assuming no OTP needed in this context
                     3

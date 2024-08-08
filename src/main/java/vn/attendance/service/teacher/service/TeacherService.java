@@ -11,6 +11,7 @@ import vn.attendance.service.teacher.response.ITeacherDto;
 import vn.attendance.service.teacher.response.TeacherDto;
 import vn.attendance.service.user.service.response.UsersDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,6 @@ public interface TeacherService {
 
 
     List<ITeacherDto> getTeacherDropList(Integer subjectId);
+
+    List<ITeacherDto> getTeacherForSchedule(Integer subjectId, LocalDate date, Integer slotId);
 }

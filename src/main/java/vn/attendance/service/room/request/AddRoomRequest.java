@@ -2,6 +2,7 @@ package vn.attendance.service.room.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AddRoomRequest {
     @Size(max = 50)
     @NotNull(message = "Room name is required")

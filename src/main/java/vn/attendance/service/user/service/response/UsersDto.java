@@ -40,6 +40,7 @@ public class UsersDto implements Serializable {
     LocalDateTime modifiedAt;
     String modifiedBy;
 
+
 //    EmailService emailService = new EmailService();
 
     public UsersDto(Integer id, String roleName, String email, String username, String firstName
@@ -63,5 +64,6 @@ public class UsersDto implements Serializable {
         this.createdBy = createdBy;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+
     }
 }

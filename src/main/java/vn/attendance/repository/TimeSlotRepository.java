@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
 
-    @Query("select count(ts.id) from TimeSlot ts")
+    @Query("select count(ts.id) from TimeSlot ts where ts.status = 'ACTIVE' ")
     int countTimeSlot();
 
     @Query("select ts from TimeSlot ts where ts.status = 'ACTIVE'")

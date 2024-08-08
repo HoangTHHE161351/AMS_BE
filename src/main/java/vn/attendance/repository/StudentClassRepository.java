@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.attendance.model.StudentClass;
+import vn.attendance.model.Users;
 import vn.attendance.service.accessLog.response.IAccessLogDTO;
 import vn.attendance.service.studentClass.response.IStudentDto;
 import vn.attendance.service.studentClass.response.StudentClassDto;
@@ -63,4 +64,10 @@ public interface StudentClassRepository extends JpaRepository<StudentClass, Inte
             " inner join roles r on r.role_name = 'STUDENT' and st.role_id = r.id " +
             " where sc.class_id = :classId and sc.status = 'ACTIVE' ", nativeQuery = true)
     List<IStudentDto> findStugetAllStudentsClassdentS(Integer classId);
+
+
+    @Query(value = "select u.* from Users u " +
+            " join Roles r on u.role_id = r.id " +
+            " where u.user_name = :username and r.role_name = 'STUDENT'and u.status = 'ACTIVE'", nativeQuery = true)
+    Users findStudentByUsername(String username);
 }

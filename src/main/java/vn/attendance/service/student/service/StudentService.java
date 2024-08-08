@@ -22,7 +22,7 @@ public interface StudentService {
 
     Page<Users> findStudent(int page, int size);
 
-    Page<UsersDto> searchStudent(String search, String curriculumName, String status,
+    Page<StudentDto> searchStudent(String search, String curriculumName, String status,
                                   int page, int size) ;
 
     AddStudentCurriculum addStudentCurriculum(AddStudentCurriculum request) throws AmsException;
@@ -34,4 +34,6 @@ public interface StudentService {
     Page<StudentCurriculumDto> searchStudentCurriculum(String search,int page, int size) ;
 
     List<IDropdownStudentDto> dropdownStudent(String search);
+
+    List<IDropdownStudentDto> dropdownStudentToClass(String search, Integer classId);
 }

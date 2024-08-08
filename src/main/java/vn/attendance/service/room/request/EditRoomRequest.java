@@ -1,9 +1,6 @@
 package vn.attendance.service.room.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public class EditRoomRequest {
     private Integer id;
     private String roomName;

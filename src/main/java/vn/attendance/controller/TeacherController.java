@@ -15,6 +15,7 @@ import vn.attendance.service.user.service.UserService;
 import vn.attendance.service.user.service.response.UsersDto;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,6 +50,11 @@ public class TeacherController {
     @GetMapping("dropdown-teacher")
     public ApiResponse<?> getTeacherDropList(@RequestParam Integer subjectId) {
         return ApiResponse.okStatus(teacherService.getTeacherDropList(subjectId));
+    }
+
+    @GetMapping("dropdown-teacher-for-schedule")
+    public ApiResponse<?> getTeacherForSchedule(@RequestParam Integer subjectId, LocalDate date, Integer slotId) {
+        return ApiResponse.okStatus(teacherService.getTeacherForSchedule(subjectId, date, slotId));
     }
 
 

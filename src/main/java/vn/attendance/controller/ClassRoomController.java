@@ -12,6 +12,7 @@ import vn.attendance.service.classRoom.request.EditClassRoomRequest;
 import vn.attendance.service.classRoom.service.ClassRoomService;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,6 +33,11 @@ public class ClassRoomController {
     @GetMapping("dropdown-classroom")
     public ApiResponse<?> searchClassRoom(@RequestParam(required = false) Integer subjectId) {
         return ApiResponse.okStatus(classRoomService.findAllClassRoom(subjectId));
+    }
+
+    @GetMapping("dropdown-classroom-for-schedule")
+    public ApiResponse<?> searchClassRoomForSchedule(@RequestParam(required = false) Integer subjectId, LocalDate date, Integer slotId) {
+        return ApiResponse.okStatus(classRoomService.searchClassRoomForSchedule(subjectId, date, slotId));
     }
 
     @GetMapping("classroomDetail")

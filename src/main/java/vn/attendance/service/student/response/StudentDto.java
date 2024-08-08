@@ -18,7 +18,6 @@ public class StudentDto implements Serializable {
     //@Size(max = 50)
     String fullname;
     //@Size(max = 50)
-    String curriculum;
     String avata;
     Integer gender;
     //@Size(max = 200)
@@ -33,13 +32,14 @@ public class StudentDto implements Serializable {
     LocalDateTime modifiedAt;
     String modifiedBy;
 //    String description;
+    Integer curriculumId;
+    String curriculumName;
 
-    public StudentDto(Integer id, String email, String username, String fullname, String curriculum, String avata, Integer gender, String address, String phone, LocalDate dob, String status, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+    public StudentDto(Integer id, String email, String username, String fullname, String avata, Integer gender, String address, String phone, LocalDate dob, String status, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy , Integer curriculumId, String curriculumName) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.fullname = fullname;
-        this.curriculum = curriculum;
         this.avata = avata;
         this.gender = gender;
         this.address = address;
@@ -50,6 +50,7 @@ public class StudentDto implements Serializable {
         this.createdBy = createdBy;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-//        this.description = description;
+        this.curriculumId = curriculumId;
+        this.curriculumName = curriculumName;
     }
 }

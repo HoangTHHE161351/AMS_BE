@@ -41,7 +41,7 @@ public class NotifyServiceImpl implements NotifyService {
     SocketController socketController;
 
     @Override
-    public Page<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException {
+    public List<NotifyDto> findAll(String search, Integer roomId, LocalDate date, Integer page, Integer size) throws AmsException {
         Users user = BaseUserDetailsService.USER.get();
         if(user == null) throw new AmsException(MessageCode.USER_NOT_FOUND);
 

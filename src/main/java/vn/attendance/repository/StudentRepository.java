@@ -19,13 +19,14 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<Users, Integer> {
     @Query("select new vn.attendance.service.student.response.StudentDto(u.id, u.email,u.username, concat(u.firstName,' ',u.lastName)," +
-            " c.curriculumName, u.avata, u.gender, u.address, u.phone, u.dob, u.status, u.createdAt, concat(uc.firstName,' ',uc.lastName)," +
-            " u.modifiedAt, concat(um.firstName,' ',um.lastName) )" +
+            " fa.image, u.gender, u.address, u.phone, u.dob, u.status, u.createdAt, concat(uc.firstName,' ',uc.lastName)," +
+            " u.modifiedAt, concat(um.firstName,' ',um.lastName), c.id, c.curriculumName )" +
             " FROM Users u" +
             " JOIN Role r ON u.roleId = r.id" +
+            " LEFT JOIN Facial fa ON fa.userId = u.id and fa.status = 'ACTIVE' " +
             " LEFT JOIN Users uc ON u.createdBy = uc.id" +
             " LEFT JOIN Users um ON u.modifiedBy = um.id " +
-            " LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId " +
+            " LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId and sc.status = 'ACTIVE' " +
             " LEFT JOIN Curriculum c ON sc.curriculumId = c.id " +
             "where r.roleName = 'STUDENT' " +
             "and (:status is null or u.status = :status) " +
@@ -40,14 +41,15 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
     List<StudentDto> findStudentByConditions(String search, String status, String curriculumName);
 
     @Query("select new vn.attendance.service.student.response.StudentDto(u.id, u.email,u.username, concat(u.firstName,' ',u.lastName)," +
-            " c.curriculumName, u.avata, u.gender, u.address, u.phone, u.dob, u.status, u.createdAt, concat(uc.firstName,' ',uc.lastName)," +
-            " u.modifiedAt, concat(um.firstName,' ',um.lastName) )" +
+            " fa.image, u.gender, u.address, u.phone, u.dob, u.status, u.createdAt, concat(uc.firstName,' ',uc.lastName)," +
+            " u.modifiedAt, concat(um.firstName,' ',um.lastName), c.id, c.curriculumName )" +
             " FROM Users u" +
             " JOIN Role r ON u.roleId = r.id" +
+            " LEFT JOIN Facial fa ON fa.userId = u.id and fa.status = 'ACTIVE' " +
             " LEFT JOIN Users uc ON u.createdBy = uc.id" +
             " LEFT JOIN Users um ON u.modifiedBy = um.id " +
-            " LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId " +
-            " LEFT JOIN Curriculum c ON sc.curriculumId = c.id and c.status = 'ACTUVE' " +
+            " LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId and sc.status = 'ACTIVE' " +
+            " LEFT JOIN Curriculum c ON sc.curriculumId = c.id " +
             " where r.roleName = 'STUDENT' " +
             "AND (:search IS NULL OR u.username LIKE CONCAT('%', :search, '%')) " +
             " AND (:id is null or u.id = :id)")
@@ -66,16 +68,16 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
             "       WHERE r.roleName = 'STUDENT'")
     Page<Users> findStudent(Pageable pageable);
 
-    @Query("SELECT new vn.attendance.service.user.service.response.UsersDto(u.id, r.roleName, u.email,u.username, u.firstName," +
-            " u.lastName, u.avata, case u.gender when 1 then 'MALE' when 2 then 'FEMALE' else 'OTHER' end, u.address, u.phone, " +
-            "u.dob, u.description, u.status, u.createdAt, uc.username," +
-            " u.modifiedAt, um.username ) " +
+    @Query(value = "select new vn.attendance.service.student.response.StudentDto(u.id, u.email, u.username, concat(u.firstName, ' ', u.lastName), " +
+            "fa.image, u.gender, u.address, u.phone, u.dob, u.status, u.createdAt, concat(uc.firstName, ' ', uc.lastName), " +
+            "u.modifiedAt, concat(um.firstName, ' ', um.lastName), c.id, c.curriculumName) " +
             "FROM Users u " +
-            " LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId " +
-            " LEFT JOIN Curriculum c ON sc.curriculumId = c.id " +
-            " JOIN Role r ON u.roleId = r.id and r.status = 'ACTIVE' " +
-            " LEFT JOIN Users uc ON u.createdBy = uc.id and uc.status = 'ACTIVE'" +
-            " LEFT JOIN Users um ON u.modifiedBy = um.id and um.status = 'ACTIVE' " +
+            "LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId and sc.status = 'ACTIVE' " +
+            "LEFT JOIN Curriculum c ON sc.curriculumId = c.id " +
+            "LEFT JOIN Facial fa ON fa.userId = u.id and fa.status = 'ACTIVE' " +
+            "JOIN Role r ON u.roleId = r.id and r.status = 'ACTIVE' " +
+            "LEFT JOIN Users uc ON u.createdBy = uc.id and uc.status = 'ACTIVE' " +
+            "LEFT JOIN Users um ON u.modifiedBy = um.id and um.status = 'ACTIVE' " +
             "WHERE (:search is null or u.username LIKE %:search% " +
             "OR u.firstName LIKE %:search% " +
             "OR u.lastName LIKE %:search% " +
@@ -83,11 +85,25 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
             "OR u.phone LIKE %:search%) " +
             "AND r.roleName = 'STUDENT' " +
             "AND (:curriculumName IS NULL OR c.curriculumName = :curriculumName) " +
-            "AND (:status IS NULL OR u.status = :status) order by u.createdAt desc")
-    Page<UsersDto> findStudentby(@Param(value = "search") String search,
-                                 @Param(value = "status") String status,
-                                 @Param(value = "curriculumName") String curriculumName,
-                                 Pageable pageable);
+            "AND (:status IS NULL OR u.status = :status) " +
+            "ORDER BY u.createdAt DESC",
+            countQuery = "select count(u.id) FROM Users u " +
+                    "LEFT JOIN StudentCurriculum sc ON u.id = sc.studentId and sc.status = 'ACTIVE' " +
+                    "LEFT JOIN Curriculum c ON sc.curriculumId = c.id " +
+                    "JOIN Role r ON u.roleId = r.id and r.status = 'ACTIVE' " +
+                    "WHERE (:search is null or u.username LIKE %:search% " +
+                    "OR u.firstName LIKE %:search% " +
+                    "OR u.lastName LIKE %:search% " +
+                    "OR u.address LIKE %:search% " +
+                    "OR u.phone LIKE %:search%) " +
+                    "AND r.roleName = 'STUDENT' " +
+                    "AND (:curriculumName IS NULL OR c.curriculumName = :curriculumName) " +
+                    "AND (:status IS NULL OR u.status = :status)")
+    Page<StudentDto> findStudentby(@Param(value = "search") String search,
+                                   @Param(value = "status") String status,
+                                   @Param(value = "curriculumName") String curriculumName,
+                                   Pageable pageable);
+
 
     @Query("SELECT new vn.attendance.service.student.response.StudentCurriculumDto(c.id, cs.curriculumName, u.username, concat(u.firstName, ' ', u.lastName)," +
             "c.description, c.status, c.createdAt, uc.username, c.modifiedAt, um.username) " +
@@ -135,4 +151,18 @@ public interface StudentRepository extends JpaRepository<Users, Integer> {
             " OR s.email LIKE concat('%',:search,'%') " +
             " OR s.phone LIKE concat('%',:search,'%')) ", nativeQuery = true)
     List<IDropdownStudentDto> dropdownStudent(String search);
+
+    @Query(value = "SELECT u.id as id, u.user_name as studentCode, CONCAT(u.last_name, ' ', u.first_name) as fullName " +
+            " FROM Users u " +
+            " INNER JOIN student_curriculum sc ON u.id = sc.student_id and sc.status = 'ACTIVE' " +
+            " INNER JOIN curriculum_sub cs ON cs.curriculum_id = sc.curriculum_id and cs.status = 'ACTIVE' " +
+            " INNER JOIN class_subject crs ON crs.subject_id = cs.subject_id and crs.status = 'ACTIVE' " +
+            " WHERE crs.id = :classId " +
+            " AND NOT EXISTS (SELECT 1 FROM student_class sc2 WHERE sc2.class_id = :classId AND sc2.student_id = u.id And sc2.status = 'ACTIVE') " +
+            " And (:search is null or u.user_name LIKE concat('%',:search,'%') " +
+            " OR u.first_name LIKE concat('%',:search,'%') " +
+            " OR u.last_name LIKE concat('%',:search,'%') " +
+            " OR u.email LIKE concat('%',:search,'%') " +
+            " OR u.phone LIKE concat('%',:search,'%')) order by u.id", nativeQuery = true)
+    List<IDropdownStudentDto> dropdownStudentToClass(String search, Integer classId);
 }

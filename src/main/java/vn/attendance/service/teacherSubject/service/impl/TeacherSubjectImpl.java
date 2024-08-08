@@ -64,6 +64,14 @@ public class TeacherSubjectImpl implements TeacherSubjectService {
         }
         TeacherSubject old = teacherSubjectRepository.findByTeacherAndSubId(teacher.getId(),subject.getId());
         if (old != null) {
+            if(old.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
+                old.setStatus(Constants.STATUS_TYPE.ACTIVE);
+                old.setModifiedBy(users.getId());
+                old.setModifiedAt(LocalDateTime.now());
+                teacherSubjectRepository.save(old);
+                request.setStatus(Constants.REQUEST_STATUS.SUCCESS);
+                return request;
+            }
             if(option == 1){
                 throw new AmsException(MessageCode.SUBJECT_ALREADY_ASSIGNED_TO_TEACHER);
             }
@@ -71,7 +79,6 @@ public class TeacherSubjectImpl implements TeacherSubjectService {
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             return request;
         }
-
         TeacherSubject teacherSubject = new TeacherSubject();
         teacherSubject.setSubjectId(subject.getId());
         teacherSubject.setTeacherId(teacher.getId());

@@ -99,6 +99,7 @@ public class UserServiceImpl implements UserService {
                 && users.getOtpExpire() != null && users.getOtpExpire().isAfter(LocalDateTime.now())) {
             users.setPassword(encoder.encode(request.getPassword()));
             users.setAccessToken(null);
+            users.setOtp(null);
             users.setTokenExpire(null);
             userRepository.save(users);
         } else throw new AmsException(MessageCode.OTP_EXPIRED);
@@ -117,11 +118,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users changePassword(ChangePasswordRequest request) throws AmsException {
         Users users = BaseUserDetailsService.USER.get();
+        if ( users.getOtp() == null || (DataUtils.safeEqual(request.getOtp(), users.getOtp()) && users.getOtpExpire().isBefore(LocalDateTime.now())))
+            throw new AmsException(MessageCode.OTP_EXPIRED);
+
         if (!encoder.matches(request.getOldPassword(), users.getPassword()))
             throw new AmsException(MessageCode.OLD_PASSWORD_NOT_MATCH);
-        if (DataUtils.safeEqual(request.getOtp(), users.getOtp()) && users.getOtpExpire().isBefore(LocalDateTime.now()))
-            throw new AmsException(MessageCode.OTP_EXPIRED);
+        if (encoder.matches(request.getNewPassword(), users.getPassword()))
+            throw new AmsException(MessageCode.NEW_PASSWORD_MATCH);
+
         users.setPassword(encoder.encode(request.getNewPassword()));
+        users.setOtp(null);
+        users.setOtpExpire(null);
         return userRepository.save(users);
     }
 

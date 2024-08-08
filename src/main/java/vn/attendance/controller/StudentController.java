@@ -28,7 +28,7 @@ public class StudentController {
 
 
     @GetMapping("search-student")
-    public ApiResponse<Page<UsersDto>> searchStudent(@RequestParam(required = false) String search,
+    public ApiResponse<?> searchStudent(@RequestParam(required = false) String search,
                                                      @RequestParam(required = false) String status,
                                                      @RequestParam(required = false) String curriculumName,
                                                      @RequestParam(defaultValue = "1") int page,
@@ -83,5 +83,10 @@ public class StudentController {
     @GetMapping("dropdown-student")
     public ApiResponse<?> dropdownStudent(@RequestParam(required = false) String search) {
         return ApiResponse.okStatus(studentService.dropdownStudent(search));
+    }
+
+    @GetMapping("dropdown-student-class")
+    public ApiResponse<?> dropdownStudentToClass(@RequestParam(required = false) String search, @RequestParam Integer classId) {
+        return ApiResponse.okStatus(studentService.dropdownStudentToClass(search, classId));
     }
 }

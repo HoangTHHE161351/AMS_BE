@@ -12,8 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.attendance.config.authen.BaseUserDetailsService;
 import vn.attendance.exception.AmsException;
+import vn.attendance.model.ClassRoom;
+import vn.attendance.model.ClassSubject;
 import vn.attendance.model.StudentCurriculum;
 import vn.attendance.model.Users;
+import vn.attendance.repository.ClassRoomRepository;
+import vn.attendance.repository.ClassSubjectRepository;
 import vn.attendance.repository.StudentCurriculumRepository;
 import vn.attendance.repository.StudentRepository;
 import vn.attendance.service.student.request.AddStudentCurriculum;
@@ -30,10 +34,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -42,6 +43,10 @@ public class StudentServiceImpl implements StudentService {
     StudentRepository studentRepository;
     @Autowired
     StudentCurriculumRepository studentCurriculumRepository;
+    @Autowired
+    ClassRoomRepository classRoomRepository;
+    @Autowired
+    ClassSubjectRepository classSubjectRepository;
 
     @Override
     public byte[] exportStudent(String search, String status, String curriculumName) throws AmsException {
@@ -69,7 +74,7 @@ public class StudentServiceImpl implements StudentService {
                 dataRow.createCell(0).setCellValue(rowNum - 1);
                 dataRow.createCell(1).setCellValue(user.getUsername());
                 dataRow.createCell(2).setCellValue(user.getFullname());
-                dataRow.createCell(3).setCellValue(user.getCurriculum() != null ? user.getCurriculum() : "N/A");
+                dataRow.createCell(3).setCellValue(user.getCurriculumName() != null ? user.getCurriculumName() : "N/A");
                 dataRow.createCell(4).setCellValue(user.getEmail());
 
                 // Handle avatar image
@@ -153,7 +158,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<UsersDto> searchStudent(String search, String curriculumName, String status, int page, int size) {
+    public Page<StudentDto> searchStudent(String search, String curriculumName, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return studentRepository.findStudentby(search, status, curriculumName, pageable);
     }
@@ -174,7 +179,7 @@ public class StudentServiceImpl implements StudentService {
             throw new AmsException(MessageCode.STUDENT_NOT_FOUND);
         }
 
-        if (student.get().getCurriculum() != null) {
+        if (student.get().getCurriculumName() != null) {
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.STUDENT_ALREADY_HAVE_CURRICULUM.toString());
             throw new AmsException(MessageCode.STUDENT_ALREADY_HAVE_CURRICULUM);
@@ -266,5 +271,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<IDropdownStudentDto> dropdownStudent(String search){
         return studentRepository.dropdownStudent(search);
+    }
+
+    @Override
+    public List<IDropdownStudentDto> dropdownStudentToClass(String search, Integer classId) {
+        return studentRepository.dropdownStudentToClass(search, classId);
     }
 }

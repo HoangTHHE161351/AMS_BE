@@ -24,6 +24,7 @@ import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -197,6 +198,11 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             addClassRoom(request, 2);
         }
         return classRoomRequests;
+    }
+
+    @Override
+    public List<IClassDto> searchClassRoomForSchedule(Integer subjectId, LocalDate date, Integer slotId) {
+        return classRoomRepository.searchClassRoomForSchedule(subjectId,date,slotId);
     }
 
 

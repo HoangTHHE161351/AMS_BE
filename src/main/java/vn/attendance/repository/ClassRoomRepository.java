@@ -9,6 +9,7 @@ import vn.attendance.model.ClassRoom;
 import vn.attendance.service.classRoom.response.ClassRoomDto;
 import vn.attendance.service.classRoom.response.IClassDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,12 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Integer> {
 
     @Query(value = "select * from class_room c where c.class_name = :className and c.status='ACTIVE' ", nativeQuery = true)
     ClassRoom findClassByName(String className);
+
+    @Query(value = "select c.id as id, c.class_name as className " +
+            "from  class_room c " +
+            "inner join class_subject cb on cb.class_id = c.id and cb.status = 'ACTIVE' " +
+            "where (:subjectId is null or cb.subject_id = :subjectId ) " +
+            "AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.class_id = c.id AND s.time_slot_id = :slotId and Date(s.learn_timestamp) = Date(:date) and s.status = 'ACTIVE') " +
+            "and c.status = 'ACTIVE'", nativeQuery = true)
+    List<IClassDto> searchClassRoomForSchedule(Integer subjectId, LocalDate date, Integer slotId);
 }

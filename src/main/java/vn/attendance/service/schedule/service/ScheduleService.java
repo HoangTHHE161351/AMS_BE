@@ -26,9 +26,6 @@ public interface ScheduleService {
 
     AddScheduleRequest addSchedule(int option, AddScheduleRequest request, String semesterName, LocalDate date) throws AmsException;
 
-    Object checkExit(Map<Object, Integer> scheduleIndexMap, Object request, Integer timeSlotId,
-                     Integer roomId, Integer classId, Integer userId, Integer subId, Integer schedule);
-
     EditScheduleRequest editSchedule(EditScheduleRequest request, LocalDate date) throws AmsException;
 
     void setRequestStatus(Object request, String status, String errorMess);

@@ -25,6 +25,7 @@ import vn.attendance.service.classSubject.response.ClassSubjectDto;
 
 import vn.attendance.service.classSubject.service.impl.ClassSubjectImpl;
 import vn.attendance.util.Constants;
+import vn.attendance.util.MessageCode;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -32,8 +33,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 class TestClassSubjectService {
@@ -65,13 +65,9 @@ class TestClassSubjectService {
         int pageNo = 1;
         int pageSize = 10;
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-
         Page<ClassSubjectDto> expectedPage = new PageImpl<>(Arrays.asList(new ClassSubjectDto()));
-
         when(classSubjectRepository.findClassSubject(search, pageable)).thenReturn(expectedPage);
-
         Page<ClassSubjectDto> result = classSubjectService.findClassSubject(search, pageNo, pageSize);
-
         assertEquals(expectedPage, result);
         verify(classSubjectRepository).findClassSubject(search, pageable);
     }
@@ -91,13 +87,11 @@ class TestClassSubjectService {
         when(classRoomRepository.findById(1)).thenReturn(Optional.of(classRoom));
         when(subjectRepository.findById(1)).thenReturn(Optional.of(subject));
         when(classSubjectRepository.findAll()).thenReturn(Arrays.asList());
-
         AddClassSubjectRequest result = classSubjectService.addClassSubject(request, 1);
 
         assertEquals("SUCCESS", result.getStatus());
         verify(classSubjectRepository).save(any(ClassSubject.class));
     }
-
 
 
     @Test
@@ -106,13 +100,8 @@ class TestClassSubjectService {
         ClassSubject classSubject = new ClassSubject();
         classSubject.setId(id);
         classSubject.setStatus(Constants.STATUS_TYPE.ACTIVE);
-
         when(classSubjectRepository.findById(id)).thenReturn(Optional.of(classSubject));
-
-        // Act
         classSubjectService.deleteClassSubject(id);
-
-        // Assert
         assertEquals(Constants.STATUS_TYPE.DELETED, classSubject.getStatus());
     }
 

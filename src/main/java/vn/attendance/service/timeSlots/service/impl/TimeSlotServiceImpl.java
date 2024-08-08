@@ -70,13 +70,6 @@ public class TimeSlotServiceImpl implements TimeSlotService {
                 return request;
             }
 
-//            if(!startTime.isBefore(endTime)){
-//                if(option == 1) throw new AmsException(MessageCode.INVALID_TIME_RANGE);
-//                request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);
-//                request.setErrorMess(MessageCode.INVALID_TIME_RANGE.getCode());
-//                return request;
-//            }
-
             if (timeSlotRepository.findByTime(startTime, endTime).isPresent()) {
                 if(option == 1) throw new AmsException(MessageCode.TIMESLOT_TIME_ALREADY_EXISTS);
                 request.setStatusAdd(Constants.REQUEST_STATUS.FAILED);

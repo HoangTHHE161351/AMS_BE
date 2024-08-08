@@ -10,7 +10,7 @@ import java.util.List;
 public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject, Integer> {
 
     @Query("select t from TeacherSubject t " +
-            "where t.teacherId = :teacherId and t.subjectId = :subId and t.status = 'ACTIVE'")
+            "where t.teacherId = :teacherId and t.subjectId = :subId")
     TeacherSubject findByTeacherAndSubId(Integer teacherId, Integer subId);
 
     @Query(value = "select ts.* from teacher_subject ts where ts.subject_id = :subjectId and ts.status = 'ACTIVE' ",nativeQuery = true)

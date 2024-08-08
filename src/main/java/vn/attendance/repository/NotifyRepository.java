@@ -11,6 +11,7 @@ import vn.attendance.model.Notify;
 import vn.attendance.service.notify.entity.NotifyDto;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface NotifyRepository extends JpaRepository<Notify, Integer> {
@@ -27,19 +28,8 @@ public interface NotifyRepository extends JpaRepository<Notify, Integer> {
             "WHERE " +
             " nu.user_id = :userId " +
             "ORDER BY n.time DESC",
-            countQuery = "SELECT n.id as id, " +
-                    "n.title as title, " +
-                    "n.content as content, " +
-                    "n.destination_page as destinationPage, " +
-                    "n.page_params as pageParams, " +
-                    "n.time as time, " +
-                    "nu.is_read as isRead " +
-                    "FROM notify n " +
-                    "JOIN notify_user nu ON n.id = nu.notify_id " +
-                    "WHERE " +
-                    " nu.user_id = :userId ",
             nativeQuery = true)
-    Page<NotifyDto> findNotify(@Param("userId") Integer userId,
+    List<NotifyDto> findNotify(@Param("userId") Integer userId,
                                Pageable pageable);
 
     @Query(value = "SELECT COUNT(*) FROM notify n " +

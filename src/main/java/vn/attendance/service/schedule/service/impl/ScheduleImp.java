@@ -22,6 +22,7 @@ import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
 import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -310,11 +311,11 @@ public class ScheduleImp implements ScheduleService {
 
         List<TimeSlot> timeSlotList = timeSlotRepository.findAllTimeSlots();
         Semester semester = semesterRepository.findSemestersByName(semesterName);
+        if (semester == null) throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
         scheduleList = scheduleRepository.finScheduleBySemester(semester.getId());
         Map<String, String> timeSlotIndexMap = timeSlotList.stream().collect(Collectors.toMap(TimeSlot::getSlotName, TimeSlot::getSlotName));
 
-        if (semester == null)
-            throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
+
 
         List<LocalDate> days;
         List<TimeSlot> slots = new ArrayList<>();
@@ -364,9 +365,9 @@ public class ScheduleImp implements ScheduleService {
         if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
-        if (users.getRoleId() != 1 && users.getRoleId() != 2) {
+/*        if (users.getRoleId() != 1 && users.getRoleId() != 2) {
             throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
-        }
+        }*/
 
         Integer semesterId = semesterIndexMap.get(semesterName);
 
@@ -380,11 +381,11 @@ public class ScheduleImp implements ScheduleService {
             sheduleIndexMap.put(schedule, schedule.getId());
         }
 
-        Integer teacherId = teacherIndexMap.get(request.getTeacherCode().toLowerCase()),
-                roomId = roomIndexMap.get(request.getRoom().toLowerCase()),
-                classId = classIndexMap.get(request.getClassName().toLowerCase()),
+        Integer teacherId = teacherIndexMap.get(request.getTeacherCode()),
+                roomId = roomIndexMap.get(request.getRoom()),
+                classId = classIndexMap.get(request.getClassName()),
                 timeslotId = timeSlotIndexMap.get(request.getTimeSlot()),
-                subId = subIndexMap.get(request.getSubjectCode().toLowerCase());
+                subId = subIndexMap.get(request.getSubjectCode());
 
         ClassSubject classSubject = classSubjectRepository.findByClassAndSubId(classId, subId);
         TeacherSubject teacherSubject = teacherSubjectRepository.findByTeacherAndSubId(teacherId, subId);
@@ -416,7 +417,7 @@ public class ScheduleImp implements ScheduleService {
         }
         if (roomId == null) {
             if (option == 1) {
-                throw new AmsException(MessageCode.ROLE_NOT_FOUND);
+                throw new AmsException(MessageCode.ROOM_NOT_FOUND);
             }
             request.setStatus(Constants.REQUEST_STATUS.FAILED);
             request.setErrorMess(MessageCode.ROOM_NOT_FOUND.getCode());
@@ -447,7 +448,7 @@ public class ScheduleImp implements ScheduleService {
             return request;
         }
 
-        if (checkExit(sheduleIndexMap, request, timeslotId, roomId, classId, teacherId, subId, null) == null) {
+        if (checkExit(sheduleIndexMap, request, timeslotId, roomId, classId, teacherId, subId, -1, option) == null) {
             Schedule schedule = new Schedule();
             schedule.setSemester(semesterId);
             schedule.setUserId(teacherId);
@@ -495,41 +496,34 @@ public class ScheduleImp implements ScheduleService {
         return request;
     }
 
-    @Override
-    public Object checkExit(Map<Object, Integer> scheduleIndexMap, Object request, Integer timeSlotId,
-                            Integer roomId, Integer classId, Integer userId, Integer subId, Integer scheduleId) {
+    private Object checkExit(Map<Object, Integer> scheduleIndexMap, Object request, Integer timeSlotId,
+                            Integer roomId, Integer classId, Integer userId, Integer subId, Integer scheduleId, Integer option) throws AmsException {
 
         for (Map.Entry<Object, Integer> entry : scheduleIndexMap.entrySet()) {
             Schedule schedule = (Schedule) entry.getKey();
             if (scheduleId == schedule.getId()) {
                 continue;
             }
-            if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId) && schedule.getClassId().equals(classId)
-                    && schedule.getUserId().equals(userId) && !schedule.getSubjectId().equals(subId)) {
-
-                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_SUBJECT.getCode());
-                return request;
-            }
             if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId) && !schedule.getClassId().equals(classId)
                     && schedule.getUserId().equals(userId) && schedule.getSubjectId().equals(subId)) {
-
-                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_CLASS.getCode());
-                return request;
-            }
-            if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId) && schedule.getClassId().equals(classId)
-                    && !schedule.getUserId().equals(userId) && schedule.getSubjectId().equals(subId)) {
-
-                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_TEACHER.getCode());
-                return request;
-            }
-            if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId) && schedule.getClassId().equals(classId)
-                    && schedule.getUserId().equals(userId) && schedule.getSubjectId().equals(subId)) {
-
+                if (option == 1) throw new AmsException(MessageCode.SCHEDULE_ALREADY_EXISTS);
                 setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_ALREADY_EXISTS.getCode());
                 return request;
             }
-            if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId) && !schedule.getClassId().equals(classId)) {
-                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_CLASS_TIME.getCode());
+
+            if (schedule.getTimeSlotId().equals(timeSlotId) && schedule.getRoomId().equals(roomId)) {
+                if (option == 1) throw new AmsException(MessageCode.SCHEDULE_FAILED_ROOM_SLOT);
+                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_ROOM_SLOT.getCode());
+                return request;
+            }
+            if (schedule.getClassId().equals(classId) && schedule.getTimeSlotId().equals(timeSlotId)) {
+                if (option == 1) throw new AmsException(MessageCode.SCHEDULE_FAILED_CLASS_SLOT);
+                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_CLASS_SLOT.getCode());
+                return request;
+            }
+            if (schedule.getUserId().equals(userId) && schedule.getTimeSlotId().equals(timeSlotId)) {
+                if (option == 1) throw new AmsException(MessageCode.SCHEDULE_FAILED_TEACHER_SLOT);
+                setRequestStatus(request, Constants.REQUEST_STATUS.FAILED, MessageCode.SCHEDULE_FAILED_TEACHER_SLOT.getCode());
                 return request;
             }
         }
@@ -562,7 +556,7 @@ public class ScheduleImp implements ScheduleService {
             throw new AmsException(MessageCode.SCHEDULE_NOT_FOUND);
         List<Attendance> attendances = attendanceRepository.findAttendanceByScheduleId(id);
         for (Attendance attendance : attendances
-        ){
+        ) {
             attendance.setStatus(Constants.STATUS_TYPE.DELETED);
             attendance.setModifiedAt(LocalDateTime.now());
             attendance.setModifiedBy(users.getId());
@@ -581,11 +575,16 @@ public class ScheduleImp implements ScheduleService {
         if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
+
         Semester semester = semesterRepository.findSemesters(LocalDate.now());
-        if (semester==null)
+
+        if (semester == null)
             throw new AmsException(MessageCode.SEMESTER_NOT_FOUND);
 
-        return attendanceRepository.exportSchedules(users.getId(), semester.getId());
+        if (users.getRoleId() == 1 || users.getRoleId() == 2)
+            return attendanceRepository.exportSchedules(null, semester.getId());
+        else
+            return attendanceRepository.exportSchedules(users.getId(), semester.getId());
     }
 
     public List<LocalDate> getDatesFromDayOfWeek(String input, LocalDate fromDate, LocalDate toDate) {
@@ -630,9 +629,9 @@ public class ScheduleImp implements ScheduleService {
         if (users == null) {
             throw new AmsException(MessageCode.USER_NOT_FOUND);
         }
-        if (users.getRoleId() != 1 && users.getRoleId() != 2) {
-            throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
-        }
+//        if (users.getRoleId() != 1 && users.getRoleId() != 2) {
+//            throw new AmsException(MessageCode.USER_NOT_AUTHORITY);
+//        }
 
         Semester semester = semesterRepository.findSemesters(date);
         scheduleList = scheduleRepository.findAllSchedules(date, semester.getId());
@@ -642,49 +641,39 @@ public class ScheduleImp implements ScheduleService {
             sheduleIndexMap.put(schedule, schedule.getId());
         }
 
-        Integer teacherId = teacherIndexMap.get(request.getTeacherCode().toLowerCase()),
-                roomId = roomIndexMap.get(request.getRoom().toLowerCase()),
-                classId = classIndexMap.get(request.getClassName().toLowerCase()),
+        Integer teacherId = teacherIndexMap.get(request.getTeacherCode()),
+                roomId = roomIndexMap.get(request.getRoom()),
+                classId = classIndexMap.get(request.getClassName()),
                 timeslotId = timeSlotIndexMap.get(request.getTimeSlot()),
-                subId = subIndexMap.get(request.getSubjectCode().toLowerCase());
+                subId = subIndexMap.get(request.getSubjectCode());
 
 
         if (teacherId == null) {
-            request.setStatus("FAILED");
-            request.setErrorMess(MessageCode.USER_NOT_FOUND.getCode());
             throw new AmsException(MessageCode.USER_NOT_FOUND);
-//            return request;
         }
         if (roomId == null) {
-            request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.ROOM_NOT_FOUND.getCode());
             throw new AmsException(MessageCode.ROOM_NOT_FOUND);
         }
         if (classId == null) {
-            request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.CLASS_NOT_FOUND.getCode());
             throw new AmsException(MessageCode.CLASS_NOT_FOUND);
         }
         if (timeslotId == null) {
-            request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.TIMESLOT_NOT_FOUND.getCode());
             throw new AmsException(MessageCode.TIMESLOT_NOT_FOUND);
         }
         if (subId == null) {
-            request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.SUBJECT_NOT_FOUND.getCode());
             throw new AmsException(MessageCode.SUBJECT_NOT_FOUND);
         }
 
         Schedule schedule = scheduleRepository.findById(request.getId()).orElse(null);
 
         if (schedule == null || schedule.getStatus().equals(Constants.STATUS_TYPE.DELETED)) {
-            request.setStatus(Constants.REQUEST_STATUS.FAILED);
-            request.setErrorMess(MessageCode.SCHEDULE_NOT_FOUND.getCode());
-            return request;
+            throw new AmsException(MessageCode.SCHEDULE_NOT_FOUND);
         }
-        scheduleList.remove(schedule);
-        if (checkExit(sheduleIndexMap, request, timeslotId, roomId, classId, teacherId, subId, schedule.getId()) == null) {
+
+        if(schedule.getLearnTimestamp().isBefore(LocalDateTime.now())) throw new AmsException(MessageCode.SCHEDULE_PAST_TIMESTAMP);
+
+        if (checkExit(sheduleIndexMap, request, timeslotId, roomId, classId, teacherId, subId, schedule.getId(), 1) == null) {
+            scheduleList.remove(schedule);
             schedule.setSemester(semester.getId());
             schedule.setUserId(teacherId);
             schedule.setRoomId(roomId);

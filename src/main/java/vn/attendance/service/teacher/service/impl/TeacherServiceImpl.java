@@ -21,6 +21,7 @@ import vn.attendance.service.user.service.response.UsersDto;
 import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -92,6 +93,11 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public List<ITeacherDto> getTeacherDropList(Integer subjectId) {
         return teacherRepository.getTeacherDropList(subjectId);
+    }
+
+    @Override
+    public List<ITeacherDto> getTeacherForSchedule(Integer subjectId, LocalDate date, Integer slotId) {
+        return teacherRepository.getTeacherForSchedule(subjectId, date, slotId);
     }
 
 

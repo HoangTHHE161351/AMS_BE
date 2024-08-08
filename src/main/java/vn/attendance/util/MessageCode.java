@@ -19,17 +19,22 @@ public enum MessageCode implements MessageCodeEnum {
     CAMERAS_EXIST_FOR_ROOM("There are still cameras associated with this room."),
     SEND_EMAIL_FAIL("Failed to send the email!"),
     USER_NOT_FOUND("User Not Found"),
+    SCHEDULE_PAST_TIMESTAMP("The schedule timestamp is in the past"),
     STUDENTS_ENROLLED_IN_CURRICULUM("There are still students enrolled in this curriculum!"),
     SEMESTER_END_TIME_HAS_ALREADY_PASSED("Cannot update semester end time because the end time has already passed."),
     SEMESTER_START_TIME_HAS_ALREADY_PASSED("The start time has already passed."),
     CURRICULUM_ALREADY_ADDED("The curriculum has already been added for the student!"),
     STUDENT_ALREADY_IN_CLASS("Student already in class!"),
     MQTT_DISCONNECT("Unable to connect to MQTT server"),
+    SCHEDULE_FAILED_ROOM_SLOT("Room conflict detected for the same time slot"),
+    SCHEDULE_FAILED_CLASS_SLOT("Class conflict detected for the same time slot"),
+    SCHEDULE_FAILED_TEACHER_SLOT("Teacher conflict detected for the same time slot"),
     CAMERA_NOT_EVENT("The camera does not have a face comparison feature!"),
     LOGIN_FAIL("Username or password incorrect"),
     SUBJECT_MISMATCH("The student cannot be added to the class because there is no matching subject between the class and the student's curriculum."),
     OTP_EXPIRED("Opt is incorrect or expired!"),
     OLD_PASSWORD_NOT_MATCH("Old password not match with current password!"),
+    NEW_PASSWORD_MATCH("New password cannot be the same as the old password!"),
     TOKEN_EXPIRE("Token expire!"),
     USERNAME_ALREADY_EXISTS("Username already exists!"),
     FACE_NOT_FOUND("The user has no facial data!"),
@@ -105,7 +110,8 @@ public enum MessageCode implements MessageCodeEnum {
     ADD_CLASS_SUBJECT_FAIL("Add class subject fail!"),
     CLASS_SUBJECT_NOT_FOUND("Class subject not found!"),
     TEACHER_SUBJECT_NOT_FOUND("Teacher subject not found!"),
-    CHECK_ATTEND_INVALID_TIME("Data changes must be made before 00:00 today!");
+    CHECK_ATTEND_INVALID_TIME("Data changes must be made before 00:00 today!"),
+    SCHEDULE_FAILED_ROOM("The schedule has a different room!"),;
 
     private final String code;
 }

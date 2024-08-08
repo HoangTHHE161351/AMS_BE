@@ -18,6 +18,7 @@ import vn.attendance.service.attendance.response.IAttendanceDTO;
 import vn.attendance.service.attendance.response.IListAttendenceResponse;
 import vn.attendance.service.attendance.response.ListAttendenceResponse;
 import vn.attendance.service.attendance.service.AttendanceService;
+import vn.attendance.service.classRoom.response.IClassDto;
 import vn.attendance.util.Constants;
 import vn.attendance.util.MessageCode;
 
@@ -47,9 +48,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Autowired
     TimeSlotRepository timeSlotRepository;
-
-    @Autowired
-    DailyLogRepository dailyLogRepository;
 
     @Override
     public List<AttendanceDto> attendanceReport(Integer semesterId, Integer classId) throws Exception {
@@ -266,6 +264,14 @@ public class AttendanceServiceImpl implements AttendanceService {
     public List<AttendanceDto> findAttendance(Integer semesterId, Integer userId, Integer classId) {
         return attendanceRepository.findAttendance(semesterId, userId, classId).stream().map(AttendanceDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IClassDto> attendanceClassDropdown(Integer semesterId) {
+        Users users = BaseUserDetailsService.USER.get();
+        if(users == null) return new ArrayList<>();
+
+        return attendanceRepository.attendanceClassDropdown(semesterId, users.getId());
     }
 
 }

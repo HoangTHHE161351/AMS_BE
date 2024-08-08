@@ -7,6 +7,8 @@ import vn.attendance.service.attendance.request.*;
 import vn.attendance.service.attendance.response.AttendanceDTO;
 import vn.attendance.service.attendance.response.IAttendanceDTO;
 import vn.attendance.service.attendance.response.ListAttendenceResponse;
+import vn.attendance.service.classRoom.response.ClassRoomDto;
+import vn.attendance.service.classRoom.response.IClassDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,5 +32,6 @@ public interface AttendanceService {
     Page<ListAttendenceResponse> getList(LocalDate date, Integer classId, Integer page, Integer size);
     List<AttendanceDto> findAttendance(Integer semesterId, Integer userId, Integer classId);
 
+    List<IClassDto> attendanceClassDropdown(Integer semesterId);
 }
 
